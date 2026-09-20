@@ -35,7 +35,8 @@
         .btn { width: 100%; padding: 14px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-login { background-color: #0984e3; }
         .btn-register { background-color: #2ecc71; margin-top: 5px; }
-        .toggle-text { font-size: 14px; color: #555; margin-top: 15px; cursor: pointer; text-decoration: underline; }
+        .toggle-text { font-size: 14px; color: #0984e3; margin-top: 15px; cursor: pointer; font-weight: 600; display: block; }
+        .toggle-text:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -55,9 +56,10 @@
         </div>
         
         <button onclick="handleAuth()" id="action-btn" class="btn btn-login">Login</button>
-        <p onclick="toggleForm()" id="toggle-link" class="toggle-text">New Faculty? Create an account</p>
+        <!-- Fixed button layout with clear pointer actions -->
+        <span onclick="toggleForm()" id="toggle-link" class="toggle-text">New Faculty? Create an account</span>
         <br>
-        <a href="index.html" style="color:#74b9ff; font-size:14px; text-decoration:none;">← Main Menu</a>
+        <a href="index.html" style="color:#74b9ff; font-size:14px; text-decoration:none; display:inline-block; margin-top:10px;">← Main Menu</a>
     </div>
 
     <script>
