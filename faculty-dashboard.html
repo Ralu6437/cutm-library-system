@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Operations - CUTM Library</title>
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f1f2f6; padding: 20px; }
+        .navbar { background: #2c3e50; padding: 15px 30px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .nav-actions { display: flex; gap: 20px; align-items: center; }
+        .nav-btn { background: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none;}
+        .logout { background: #e74c3c; }
+        .search-container { margin: 20px 0; display: flex; gap: 15px; }
+        .search-box { flex: 1; padding: 12px; border: 2px solid #bdc3c7; border-radius: 8px; font-size: 16px; }
+        .stats-grid { display: flex; gap: 20px; margin-bottom: 30px; }
+        .stat-card { flex: 1; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; cursor: pointer; border: 2px solid transparent; transition: all 0.3s; }
+        .stat-card:hover { border-color: #3498db; transform: translateY(-2px); }
+        .stat-card h3 { margin: 0; color: #7f8c8d; font-size: 16px; }
+        .stat-card p { margin: 10px 0 0 0; font-size: 28px; font-weight: bold; color: #2c3e50; }
+        .data-display { background: white; padding: 20px; border-radius: 12px; min-height: 200px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
+        .book-card { background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .book-card img { height: 140px; object-fit: cover; margin-bottom: 10px; border-radius: 4px; }
+        .book-card h4 { margin: 5px 0; color: #2c3e50; }
+        .book-card p { margin: 4px 0; font-size: 13px; color: #7f8c8d; }
+        .help-item { border-left: 4px solid #f1c40f; background: #fffde7; padding: 15px; margin-bottom: 12px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .help-item textarea { width: 60%; padding: 8px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h2>Faculty Control Command Center</h2>
+        <div class="nav-actions">
+            <button class="nav-btn" onclick="toggleHelpBox()">Helpbox Requests</button>
+            <button class="nav-btn" onclick="showManagePanel()">Manage Books Inventory</button>
+            <a href="faculty-login.html" class="nav-btn logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="masterSearch" class="search-box" onkeyup="filterFacultyContent()" placeholder="Search Catalog, Issued entries, or names...">
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card" onclick="renderDataView('available')">
+            <h3>Total Books Available</h3>
+            <p id="count-avail">3</p>
+        </div>
+        <div class="stat-card" onclick="renderDataView('taken')">
+            <h3>Taken by Students</h3>
+            <p id="count-taken">0</p>
+        </div>
+        <div class="stat-card" onclick="renderDataView('overdue')">
+            <h3>Not Returned (Overdue)</h3>
+            <p id="count-overdue">0</p>
+        </div>
+    </div>
+
+    <div class="data-display" id="contentViewArea">
+        <h3>Main Catalog Overview (High-Rating Recommendations)</h3>
+        <div class="book-grid" id="catalogTarget"></div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
+            authDomain: "://firebaseapp.com",
+            projectId: "cutm-library",
+            storageBucket: "cutm-library.firebasestorage.app",
+            messagingSenderId: "719135627027",
+            appId: "1:719135627027:web:1b7c73157ea4675a816ce6"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Local state initialization
+        let books = [
+            { id: "b1", name: "Python Programming Basics", author: "John Doe", rating: 4.8, available: 5, pic: "https://unsplash.com" },
+            { id: "b2", name: "Database Management Systems", author: "R. Elmasri", rating: 4.5, available: 3, pic: "https://unsplash.com" },
+            { id: "b3", name: "Web Development with HTML/CSS", author: "Jane Smith", rating: 4.9, available: 8, pic: "https://unsplash.com" }
+        ];
+
+        let issuedEntries = [];
+        let viewState = "catalog";
+
+        database.ref('library_books').on('value', (snap) => {
+            if(snap.exists()) { books = Object.values(snap.val()); }
+            updateCounters();
+            if(viewState === "catalog") renderCatalog(books);
+        });
+
+        database.ref('issued').on('value', (snap) => {
+            issuedEntries = snap.exists() ? Object.values(snap.val()) : [];
+            updateCounters();
+        });
+
+        function updateCounters() {
+            document.getElementById('count-avail').innerText = books.reduce((acc, b) => acc + parseInt(b.available), 0);
+            document.getElementById('count-taken').innerText = issuedEntries.filter(e => !e.returned).length;
+            
+            const today = new Date();
+            let overdue = issuedEntries.filter(e => !e.returned && new Date(e.returnDate) < today);
+            document.getElementById('count-overdue').innerText = overdue.length;
+        }
+
+        function renderCatalog(targetBooks) {
+            let html = `<h3>Books Catalog (Sorted by Highest Rating)</h3><div class="book-grid">`;
+            let sorted = [...targetBooks].sort((a,b) => b.rating - a.rating);
+            sorted.forEach(b => {
+                html += `
+                    <div class="book-card">
+                        <img src="${b.pic}" alt="book">
+                        <h4>${b.name}</h4>
+                        <p>Author: ${b.author}</p>
+                        <p>Rating: ⭐ ${b.rating}</p>
+                        <p>Available: <strong>${b.available}</strong></p>
+                    </div>`;
+            });
+            html += `</div>`;
+            document.getElementById('contentViewArea').innerHTML = html;
+        }
+
+        function renderDataView(type) {
+            viewState = type;
+            let display = document.getElementById('contentViewArea');
+            if (type === 'available') {
+                renderCatalog(books);
+            } else if (type === 'taken') {
+                let html = `<h3>Books Currently Issued to Students</h3><div class="book-grid">`;
+                issuedEntries.filter(e => !e.returned).forEach(e => {
+                    html += `
+                        <div class="book-card">
+                            <img src="${e.pic}" alt="book">
+                            <h4>${e.name}</h4>
+                            <p>Author: ${e.author}</p>
+                            <p>Student ID: <strong>${e.studentId}</strong></p>
+                            <p>Issue Date: ${e.issueDate}</p>
+                            <p>Return Expectation: ${e.returnDate}</p>
+                        </div>`;
+                });
+                display.innerHTML = html + `</div>`;
+            } else if (type === 'overdue') {
+                let html = `<h3>Defaulters & Overdue Tracking List</h3><div class="book-grid">`;
+                const today = new Date();
+                issuedEntries.filter(e => !e.returned && new Date(e.returnDate) < today).forEach(e => {
+                    html += `
+                        <div class="book-card" style="border: 2px solid #e74c3c;">
+                            <img src="${e.pic}" alt="book">
+                            <h4>${e.name}</h4>
+                            <p>Student Regd No: <strong>${e.studentId}</strong></p>
+                            <p>Dead-line Date: <span style="color:#e74c3c;font-weight:bold;">${e.returnDate}</span></p>
+                            <button class="nav-btn logout" onclick="triggerAlert('${e.studentId}', '${e.name}')">Notify Student</button>
+                        </div>`;
+                });
+                display.innerHTML = html + `</div>`;
+            }
+        }
+
+        function triggerAlert(studentId, bookName) {
+            database.ref('notifications/' + studentId).push({
+                message: `CRITICAL NOTICE: Return deadline passed for book "${bookName}". Please present it to counter immediately!`,
+                date: new Date().toLocaleDateString()
+            }).then(() => alert("Warning pinged directly to student screen."));
+        }
+
+        function toggleHelpBox() {
+            viewState = "helpbox";
+            database.ref('helpbox').on('value', (snap) => {
+                if(viewState !== "helpbox") return;
+                let html = `<h3>Active Helpbox Concern Tickets</h3>`;
+                if(!snap.exists()) { html += "<p>No active concerns present.</p>"; }
+                else {
+                    snap.forEach((child) => {
+                        let data = child.val();
+                        if(!data.answered) {
+                            html += `
+                            <div class="help-item">
+                                <div><strong>Student ID: ${data.studentId}</strong><p>${data.message}</p></div>
