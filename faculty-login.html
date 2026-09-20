@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Portal - CUTM Library</title>
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('library-bg.png') #2d3436 no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            backdrop-filter: blur(8px);
+        }
+        .card img { height: 65px; margin-bottom: 15px; }
+        h2 { color: #2d3436; margin-bottom: 20px; font-size: 24px; }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 14px; color: #555; margin-bottom: 6px; font-weight: 500; }
+        .input-group input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 14px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-login { background-color: #0984e3; }
+        .btn-register { background-color: #2ecc71; margin-top: 5px; }
+        .toggle-text { font-size: 14px; color: #555; margin-top: 15px; cursor: pointer; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <img src="logo.jpg" alt="CUTM Logo">
+        <h2 id="form-title">Faculty Portal Login</h2>
+        
+        <div class="input-group">
+            <label for="phone">Phone Number</label>
+            <input type="text" id="phone" placeholder="Enter 10-digit number" required>
+        </div>
+        
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter password" required>
+        </div>
+        
+        <button onclick="handleAuth()" id="action-btn" class="btn btn-login">Login</button>
+        <p onclick="toggleForm()" id="toggle-link" class="toggle-text">New Faculty? Create an account</p>
+        <br>
+        <a href="index.html" style="color:#74b9ff; font-size:14px; text-decoration:none;">← Main Menu</a>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
+            authDomain: "://firebaseapp.com",
+            projectId: "cutm-library",
+            storageBucket: "cutm-library.firebasestorage.app",
+            messagingSenderId: "719135627027",
+            appId: "1:719135627027:web:1b7c73157ea4675a816ce6"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let isLoginView = true;
+
+        function toggleForm() {
+            isLoginView = !isLoginView;
+            document.getElementById('form-title').innerText = isLoginView ? "Faculty Portal Login" : "Register Faculty ID";
+            document.getElementById('action-btn').innerText = isLoginView ? "Login" : "Sign Up";
+            document.getElementById('action-btn').className = isLoginView ? "btn btn-login" : "btn btn-register";
+            document.getElementById('toggle-link').innerText = isLoginView ? "New Faculty? Create an account" : "Already registered? Login here";
+        }
+
+        function handleAuth() {
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!phone || !password) { alert("Please compile all fields."); return; }
+
+            const facultyRef = database.ref('faculty/' + phone);
+
+            if (isLoginView) {
+                facultyRef.once('value').then((snapshot) => {
+                    if (snapshot.exists() && snapshot.val().password === password) {
+                        alert("Authentication successful!");
+                        localStorage.setItem("facultyPhone", phone);
+                        window.location.href = "faculty-dashboard.html";
+                    } else {
+                        alert("Invalid Faculty credentials.");
+                    }
+                });
+            } else {
+                facultyRef.once('value').then((snapshot) => {
+                    if (snapshot.exists()) {
+                        alert("Phone number profile already exists.");
+                    } else {
+                        facultyRef.set({ password: password }).then(() => {
+                            alert("Faculty Account Created!");
+                            toggleForm();
+                        });
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
