@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CUTM Library Management System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Adds the building image as the background covering the whole screen */
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('library-bg.png') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Positions the logo in the top-left corner */
+        .logo-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* Subtle white background behind logo */
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .logo-container img {
+            height: 70px; /* Adjust size as needed */
+            width: auto;
+            display: block;
+        }
+
+        /* The central interactive welcome window */
+        .container {
+            background-color: rgba(255, 255, 255, 0.95); /* Semi-transparent white card */
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            backdrop-filter: blur(5px); /* Adds a premium modern glass blur effect */
+        }
+
+        h1 {
+            color: #2d3436;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            display: block;
+            padding: 14px;
+            background-color: #0984e3;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #00cec9;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo in the top left corner -->
+    <div class="logo-container">
+        <img src="logo.jpg" alt="CUTM Logo">
+    </div>
+
+    <!-- Login Container Card -->
+    <div class="container">
+        <h1>Welcome to CUTM Library</h1>
+        <div class="btn-group">
+            <a href="student-login.html" class="btn">Student Login</a>
+            <a href="faculty-login.html" class="btn">Faculty Login</a>
+        </div>
+    </div>
+
+</body>
+</html>

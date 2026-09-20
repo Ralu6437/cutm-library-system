@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login - CUTM Library</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Added solid background fallback color if the picture path fails */
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('library-bg.jpg') #2d3436 no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .login-card img {
+            height: 65px;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            color: #2d3436;
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #0984e3;
+            outline: none;
+            box-shadow: 0 0 8px rgba(9, 132, 227, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #0984e3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            background-color: #00cec9;
+        }
+
+        .links-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .signup-text {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .signup-text a {
+            color: #0984e3;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signup-text a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #0984e3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <img src="logo.jpg" alt="CUTM Logo">
+        <h2>Student Portal Login</h2>
+        
+        <form action="http://127.0.0" method="POST">
+            <div class="input-group">
+                <label for="reg-no">Registration Number</label>
+                <input type="text" id="reg-no" name="username" placeholder="e.g., 2203011200XX" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            
+            <button type="submit" class="login-btn">Secure Login</button>
+        </form>
+
+        <div class="links-container">
+            <!-- New Account Option Line -->
+            <p class="signup-text">New user? <a href="register.html">Create an Account</a></p>
+            <a href="index.html" class="back-link">← Back to Main Menu</a>
+        </div>
+    </div>
+
+</body>
+</html>
