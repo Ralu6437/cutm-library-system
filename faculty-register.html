@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Faculty Account - CUTM Library</title>
-    <!-- Load stable Firebase Compat SDK libraries dynamically -->
+    <!-- Ultra-stable, highly compatible standalone web scripts -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <style>
@@ -125,7 +125,7 @@
     </div>
 
     <script>
-        // Your live Firebase Web Console keys configuration credentials
+        // Mapped to your dynamic cloud database URL properties
         const firebaseConfig = {
             apiKey: "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
             authDomain: "://firebaseapp.com",
@@ -136,7 +136,7 @@
             databaseURL: "https://firebaseio.com"
         };
 
-        // Complete initialization instance sequence execution mapping
+        // Initialize connection securely 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
@@ -145,11 +145,10 @@
             const password = document.getElementById('password').value.trim();
 
             if(!phone || !password) {
-                alert("Please fill out all registration fields.");
+                alert("Please complete all registration fields.");
                 return;
             }
 
-            // Target the faculty nodes directory structural tree path explicitly
             const facultyRef = database.ref('faculty/' + phone);
             
             facultyRef.once('value', (snapshot) => {
