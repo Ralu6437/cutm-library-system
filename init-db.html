@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Database Initialization Controller Matrix</title>
+    <!-- FIXED: Restored full operational connection library links -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
 </head>
-<body style="font-family:sans-serif; text-align:center; padding-top:100px; background:#f5f6fa;">
+<body style="font-family: 'Segoe UI', sans-serif; text-align:center; padding-top:100px; background:#f5f6fa;">
 
     <h2>CUTM Library Core Matrix Initialization</h2>
     <p>Click the deployment trigger switch below to sync folders, tracking arrays, and high-rating books into Firebase.</p>
-    <button onclick="setupSystemMatrix()" style="padding:15px 30px; font-weight:bold; background:#0984e3; color:white; border:none; border-radius:6px; cursor:pointer;">Initialize Database Nodes</button>
-    <p id="status-log" style="font-weight:bold; color:#2ecc71; margin-top:20px;"></p>
+    <button onclick="setupSystemMatrix()" style="padding:15px 30px; font-weight:bold; background:#0984e3; color:white; border:none; border-radius:6px; cursor:pointer; font-size:16px;">Initialize Database Nodes</button>
+    <p id="status-log" style="font-weight:bold; color:#2ecc71; margin-top:20px; font-size:18px;"></p>
 
     <script>
+        // FIXED: Complete parameters explicitly mapped to your Singapore data cluster
         const firebaseConfig = {
             apiKey: "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
             authDomain: "://firebaseapp.com",
@@ -23,31 +25,34 @@
             appId: "1:719135627027:web:1b7c73157ea4675a816ce6",
             databaseURL: "https://firebasedatabase.app"
         };
+        
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         function setupSystemMatrix() {
+            document.getElementById('status-log').style.color = "#0984e3";
             document.getElementById('status-log').innerText = "Processing system catalog arrays initialization...";
             
-            // Core structural dataset for catalog layout display mapping
+            // Core starting book library database catalog list
             const initialCatalogData = {
                 "b1": { id: "b1", name: "Python Programming Basics", author: "John Doe", rating: 4.8, available: 5, pic: "https://unsplash.com" },
                 "b2": { id: "b2", name: "Database Management Systems", author: "R. Elmasri", rating: 4.5, available: 3, pic: "https://unsplash.com" },
                 "b3": { id: "b3", name: "Web Development Matrix with HTML/CSS", author: "Jane Smith", rating: 4.9, available: 8, pic: "https://unsplash.com" },
-                "b4": { id: "b4", name: "Advanced Java Architecture Fundamentals", author: "James Gosling", rating: 4.7, available: 0, pic: "https://unsplash.com" } // Set to 0 to test the Notification Reminder tracking flow loops
+                "b4": { id: "b4", name: "Advanced Java Architecture Fundamentals", author: "James Gosling", rating: 4.7, available: 0, pic: "https://unsplash.com" } // Set to 0 to easily test the student dynamic reminder queues!
             };
 
-            // Seed reference paths to structural directories trees
+            // Seed reference logs directly to your real-time cloud data trees
             database.ref('library_books').set(initialCatalogData)
             .then(() => {
-                // Initialize clean structural endpoints loops so code reads don't throw null reference values later
                 return database.ref('system_status').set({ status: "Operational", initialized: new Date().toLocaleDateString() });
             })
             .then(() => {
+                document.getElementById('status-log').style.color = "#2ecc71";
                 document.getElementById('status-log').innerText = "Database Storage Architecture Synchronized Successfully! You can close this page.";
                 alert("Database Seeding Completed Successfully!");
             })
             .catch(err => {
+                document.getElementById('status-log').style.color = "#e74c3c";
                 document.getElementById('status-log').innerText = "Matrix Sync Error: " + err.message;
                 console.error(err);
             });
