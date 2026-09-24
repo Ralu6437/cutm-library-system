@@ -1,104 +1,469 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Faculty Portal - CUTM Library</title>
-    
-    <!-- FIXED: Added full, working standalone Firebase script paths -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
-    
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('library-bg.png') #2d3436 no-repeat center center fixed;
+
+            background:
+                linear-gradient(
+                    rgba(0, 0, 0, 0.6),
+                    rgba(0, 0, 0, 0.6)
+                ),
+                url('library-bg.png');
+
+            background-color: #2d3436;
+            background-repeat: no-repeat;
+            background-position: center center;
             background-size: cover;
+            background-attachment: fixed;
+
             height: 100vh;
             margin: 0;
+
             display: flex;
             justify-content: center;
             align-items: center;
         }
+
         .card {
             background: rgba(255, 255, 255, 0.95);
+
             padding: 40px;
+
             border-radius: 16px;
-            box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+
+            box-shadow:
+                0 12px 36px rgba(0, 0, 0, 0.4);
+
             width: 100%;
             max-width: 380px;
+
             text-align: center;
+
             backdrop-filter: blur(8px);
         }
-        .card img { height: 65px; margin-bottom: 15px; }
-        h2 { color: #2d3436; margin-bottom: 20px; font-size: 24px; }
-        .input-group { text-align: left; margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 14px; color: #555; margin-bottom: 6px; font-weight: 500; }
-        .input-group input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 14px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-login { background-color: #0984e3; }
-        .btn-login:hover { background-color: #00cec9; }
-        .toggle-text { font-size: 14px; color: #0984e3; margin-top: 15px; cursor: pointer; font-weight: 600; display: block; text-decoration: none; }
-        .toggle-text:hover { text-decoration: underline; }
+
+        .card img {
+            height: 65px;
+            width: auto;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            color: #2d3436;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+
+            font-size: 14px;
+            color: #555;
+
+            margin-bottom: 6px;
+
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+
+            padding: 12px;
+
+            border: 2px solid #ddd;
+            border-radius: 8px;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #0984e3;
+
+            box-shadow:
+                0 0 8px rgba(9, 132, 227, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+
+            padding: 14px;
+
+            color: white;
+
+            border: none;
+            border-radius: 8px;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            margin-top: 10px;
+        }
+
+        .btn-login {
+            background-color: #0984e3;
+        }
+
+        .btn-login:hover {
+            background-color: #00cec9;
+        }
+
+        .btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .toggle-text {
+            font-size: 14px;
+
+            color: #0984e3;
+
+            margin-top: 15px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+            display: block;
+
+            text-decoration: none;
+        }
+
+        .toggle-text:hover {
+            text-decoration: underline;
+        }
+
+        .main-menu {
+            color: #74b9ff;
+
+            font-size: 14px;
+
+            text-decoration: none;
+
+            display: inline-block;
+
+            margin-top: 10px;
+        }
+
+        .main-menu:hover {
+            color: #0984e3;
+        }
     </style>
 </head>
+
+
 <body>
 
     <div class="card">
-        <img src="logo.jpg" alt="CUTM Logo">
+
+        <img
+            src="logo.jpg"
+            alt="CUTM Logo"
+        >
+
         <h2>Faculty Portal Login</h2>
-        
+
+
+        <!-- Phone Number -->
         <div class="input-group">
-            <label for="phone">Phone Number</label>
-            <input type="text" id="phone" placeholder="Enter 10-digit number" required>
+
+            <label for="phone">
+                Phone Number
+            </label>
+
+            <input
+                type="tel"
+                id="phone"
+                placeholder="Enter 10-digit number"
+                maxlength="10"
+                autocomplete="tel"
+            >
+
         </div>
-        
+
+
+        <!-- Password -->
         <div class="input-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Enter password" required>
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter password"
+                autocomplete="current-password"
+            >
+
         </div>
-        
-        <!-- FIXED: Fixed class assignment styling error -->
-        <button onclick="handleLogin()" class="btn btn-login">Login</button>
-        <a href="faculty-register.html" class="toggle-text">New Faculty? Create an account</a>
-        <br>
-        <a href="index.html" style="color:#74b9ff; font-size:14px; text-decoration:none; display:inline-block; margin-top:10px;">← Main Menu</a>
+
+
+        <!-- Login Button -->
+        <button
+            type="button"
+            onclick="handleLogin()"
+            id="loginButton"
+            class="btn btn-login"
+        >
+            Login
+        </button>
+
+
+        <!-- Registration -->
+        <a
+            href="faculty-register.html"
+            class="toggle-text"
+        >
+            New Faculty? Create an account
+        </a>
+
+
+        <!-- Main Menu -->
+        <a
+            href="index.html"
+            class="main-menu"
+        >
+            ← Main Menu
+        </a>
+
     </div>
 
+
+
     <script>
-        // FIXED: Added full region parameters configuration including databaseURL
+
+        // ==========================================
+        // FIREBASE CONFIGURATION
+        // ==========================================
+
         const firebaseConfig = {
-            apiKey: "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
-            authDomain: "cutm-library.firebaseapp.com",
-            projectId: "cutm-library",
-            storageBucket: "cutm-library.firebasestorage.app",
-            messagingSenderId: "719135627027",
-            appId: "1:719135627027:web:1b7c73157ea4675a816ce6",
-            databaseURL: "https://firebasedatabase.app"
+
+            apiKey:
+                "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
+
+            authDomain:
+                "cutm-library.firebaseapp.com",
+
+            projectId:
+                "cutm-library",
+
+            storageBucket:
+                "cutm-library.firebasestorage.app",
+
+            messagingSenderId:
+                "719135627027",
+
+            appId:
+                "1:719135627027:web:1b7c73157ea4675a816ce6",
+
+            databaseURL:
+                "https://cutm-library-default-rtdb.asia-southeast1.firebasedatabase.app"
+
         };
 
+
+        // ==========================================
+        // INITIALIZE FIREBASE
+        // ==========================================
+
         firebase.initializeApp(firebaseConfig);
+
         const database = firebase.database();
 
+
+
+        // ==========================================
+        // FACULTY LOGIN
+        // ==========================================
+
         function handleLogin() {
-            const phone = document.getElementById('phone').value.trim();
-            const password = document.getElementById('password').value.trim();
 
-            if (!phone || !password) { alert("Please complete all input fields."); return; }
+            const phone =
+                document.getElementById("phone")
+                .value
+                .trim();
 
-            database.ref('faculty/' + phone).once('value').then((snapshot) => {
-                if (snapshot.exists() && snapshot.val().password === password) {
-                    alert("Authentication successful!");
-                    localStorage.setItem("facultyPhone", phone);
-                    window.location.href = "faculty-dashboard.html"; // Open management panel
-                } else {
-                    alert("Invalid Faculty credentials. Please try again.");
-                }
-            }).catch((error) => {
-                alert("Database connection error: " + error.message);
-            });
+            const password =
+                document.getElementById("password")
+                .value
+                .trim();
+
+            const loginButton =
+                document.getElementById("loginButton");
+
+
+            // ------------------------------------------
+            // CHECK EMPTY FIELDS
+            // ------------------------------------------
+
+            if (phone === "" || password === "") {
+
+                alert(
+                    "Please complete all input fields."
+                );
+
+                return;
+            }
+
+
+            // ------------------------------------------
+            // CHECK PHONE NUMBER
+            // ------------------------------------------
+
+            if (!/^[0-9]{10}$/.test(phone)) {
+
+                alert(
+                    "Please enter a valid 10-digit phone number."
+                );
+
+                return;
+            }
+
+
+            // ------------------------------------------
+            // DISABLE LOGIN BUTTON
+            // ------------------------------------------
+
+            loginButton.disabled = true;
+
+            loginButton.innerText =
+                "Checking...";
+
+
+            // ------------------------------------------
+            // FIND FACULTY ACCOUNT
+            // ------------------------------------------
+
+            database
+                .ref("faculty/" + phone)
+                .once("value")
+
+                .then(function(snapshot) {
+
+                    // ------------------------------------------
+                    // ACCOUNT FOUND
+                    // ------------------------------------------
+
+                    if (snapshot.exists()) {
+
+                        const facultyData =
+                            snapshot.val();
+
+
+                        // ------------------------------------------
+                        // CHECK PASSWORD
+                        // ------------------------------------------
+
+                        if (
+                            facultyData.password === password
+                        ) {
+
+                            alert(
+                                "Authentication successful!"
+                            );
+
+
+                            // Save faculty phone
+                            localStorage.setItem(
+                                "facultyPhone",
+                                phone
+                            );
+
+
+                            // Open dashboard
+                            window.location.href =
+                                "faculty-dashboard.html";
+
+                        }
+
+                        else {
+
+                            alert(
+                                "Invalid Faculty credentials. " +
+                                "Please try again."
+                            );
+
+                            loginButton.disabled = false;
+
+                            loginButton.innerText =
+                                "Login";
+                        }
+
+                    }
+
+                    // ------------------------------------------
+                    // ACCOUNT NOT FOUND
+                    // ------------------------------------------
+
+                    else {
+
+                        alert(
+                            "No Faculty account found " +
+                            "with this phone number."
+                        );
+
+                        loginButton.disabled = false;
+
+                        loginButton.innerText =
+                            "Login";
+                    }
+
+                })
+
+
+                // ------------------------------------------
+                // DATABASE ERROR
+                // ------------------------------------------
+
+                .catch(function(error) {
+
+                    console.error(
+                        "Firebase Error:",
+                        error
+                    );
+
+                    alert(
+                        "Database connection error:\n\n" +
+                        error.message
+                    );
+
+                    loginButton.disabled = false;
+
+                    loginButton.innerText =
+                        "Login";
+
+                });
+
         }
-    </script>
-</body>
-</html>
 
+    </script>
+
+</body>
+
+</html>
