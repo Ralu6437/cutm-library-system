@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Inventory - CUTM Library</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #f1f2f6;
+            padding: 20px;
+        }
+
+        /* Top Navigation Header */
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 30px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .nav-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background: #2980b9;
+        }
+
+        /* Workspace */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .card-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        /* Form */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-input {
+            padding: 11px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 12px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-add:hover {
+            background: #27ae60;
+        }
+
+        /* Book List */
+        .book-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .book-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .book-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .book-row img {
+            width: 45px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #ddd;
+        }
+
+        .book-details h4 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+
+        .book-details p {
+            margin: 3px 0 0 0;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        .badge {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 800px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header Navbar -->
+    <div class="navbar">
+        <h2>Inventory Control Command</h2>
+        <a href="faculty-dashboard.html" class="nav-btn">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Workspace -->
+    <div class="workspace">
+
+        <!-- Add Book Form -->
+        <div class="card-box">
+
+            <h3 class="section-title">Add New Title</h3>
+
+            <div class="form-group">
+                <label>Book Title Name</label>
+                <input
+                    type="text"
+                    id="book-title"
+                    placeholder="e.g., Programming in C++"
+                    class="form-input"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Author Name</label>
+                <input
+                    type="text"
+                    id="book-author"
+                    placeholder="e.g., E. Balagurusamy"
+                    class="form-input"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Initial Available Quantity</label>
+                <input
+                    type="number"
+                    id="book-qty"
+                    placeholder="e.g., 10"
+                    class="form-input"
+                    min="1"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Book Cover Image URL</label>
+                <input
+                    type="text"
+                    id="book-pic"
+                    placeholder="Paste image web address"
+                    class="form-input"
+                >
+            </div>
+
+            <button class="btn-add" onclick="addBookToDB()">
+                Add to System Inventory
+            </button>
+
+        </div>
+
+        <!-- Inventory -->
+        <div class="card-box">
+
+            <h3 class="section-title">
+                Active Stocks Overview
+            </h3>
+
+            <div class="book-list" id="inventoryFeed">
+                Retrieving storage records...
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
+            authDomain: "cutm-library.firebaseapp.com",
+            projectId: "cutm-library",
+            storageBucket: "cutm-library.firebasestorage.app",
+            messagingSenderId: "719135627027",
+            appId: "1:719135627027:web:1b7c73157ea4675a816ce6",
+            databaseURL: "https://cutm-library-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Database reference
+        const database = firebase.database();
+
+
+        // Load books from Firebase in real time
+        database.ref('library_books').on('value', (snap) => {
+
+            const feedZone = document.getElementById('inventoryFeed');
+
+            if (!snap.exists()) {
+
+                feedZone.innerHTML = `
+                    <p style="
+                        color:#7f8c8d;
+                        text-align:center;
+                    ">
+                        No inventory rows found.
+                    </p>
+                `;
+
+                return;
+            }
+
+            let html = "";
+
+            snap.forEach(child => {
+
+                const b = child.val();
+
+                const bookName = b.name || "Unknown Book";
+                const author = b.author || "Unknown Author";
+                const rating = b.rating || "5.0";
+                const available = b.available || 0;
+
+                const image = b.pic || "logo.jpg";
+
+                html += `
+                    <div class="book-row">
+
+                        <div class="book-info">
+
+                            <img
+                                src="${image}"
+                                alt="Book Cover"
+                                onerror="this.onerror=null; this.src='logo.jpg';"
+                            >
+
+                            <div class="book-details">
+
+                                <h4>
+                                    ${bookName}
+                                </h4>
+
+                                <p>
+                                    By ${author} |
+                                    Rating: ⭐ ${rating}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="badge">
+                            Qty: ${available}
+                        </div>
+
+                    </div>
+                `;
+            });
+
+            feedZone.innerHTML = html;
+
+        }, (error) => {
+
+            document.getElementById('inventoryFeed').innerHTML = `
+                <p style="color:red; text-align:center;">
+                    Failed to load inventory: ${error.message}
+                </p>
+            `;
+
+        });
+
+
+        // Add new book
+        function addBookToDB() {
+
+            const name =
+                document.getElementById('book-title').value.trim();
+
+            const author =
+                document.getElementById('book-author').value.trim();
+
+            const count =
+                document.getElementById('book-qty').value.trim();
+
+            const pic =
+                document.getElementById('book-pic').value.trim();
+
+
+            // Basic validation
+            if (!name || !author || !count) {
+
+                alert(
+                    "Please fill in Book Title, Author Name and Quantity."
+                );
+
+                return;
+            }
+
+
+            // Validate quantity
+            const quantity = parseInt(count);
+
+            if (isNaN(quantity) || quantity < 1) {
+
+                alert(
+                    "Quantity must be at least 1."
+                );
+
+                return;
+            }
+
+
+            // Default image
+            const bookImage = pic || "logo.jpg";
+
+
+            // Generate unique Firebase book ID
+            const newId = "b_" + Date.now();
+
+
+            // Save book to Firebase
+            database.ref('library_books/' + newId).set({
+
+                id: newId,
+
+                name: name,
+
+                author: author,
+
+                rating: 5.0,
+
+                available: quantity,
+
+                pic: bookImage,
+
+                createdAt: Date.now()
+
+            })
+
+            .then(() => {
+
+                alert(
+                    `"${name}" successfully added to the library inventory.`
+                );
+
+
+                // Clear form
+                document.getElementById('book-title').value = "";
+
+                document.getElementById('book-author').value = "";
+
+                document.getElementById('book-qty').value = "";
+
+                document.getElementById('book-pic').value = "";
+
+            })
+
+            .catch((error) => {
+
+                alert(
+                    "Inventory update failed: " + error.message
+                );
+
+            });
+
+        }
+
+    </script>
+
+</body>
+</html>
