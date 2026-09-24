@@ -1,23 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Create Faculty Account - CUTM Library</title>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
 
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            font-family:
+                'Segoe UI',
+                Tahoma,
+                Geneva,
+                Verdana,
+                sans-serif;
 
             background:
                 linear-gradient(
@@ -27,23 +40,31 @@
                 url('library-bg.png');
 
             background-color: #2d3436;
+
             background-repeat: no-repeat;
+
             background-position: center center;
+
             background-size: cover;
+
             background-attachment: fixed;
 
-            min-height: 100vh;
+            height: 100vh;
+
             margin: 0;
 
             display: flex;
-            justify-content: center;
-            align-items: center;
 
-            padding: 20px;
+            justify-content: center;
+
+            align-items: center;
         }
 
+
         .register-card {
-            background-color: rgba(255, 255, 255, 0.95);
+
+            background-color:
+                rgba(255, 255, 255, 0.95);
 
             padding: 40px;
 
@@ -53,6 +74,7 @@
                 0 12px 36px rgba(0, 0, 0, 0.4);
 
             width: 100%;
+
             max-width: 380px;
 
             text-align: center;
@@ -60,32 +82,45 @@
             backdrop-filter: blur(8px);
         }
 
+
         .register-card img {
+
             height: 65px;
+
             width: auto;
 
             margin-bottom: 15px;
         }
 
+
         h2 {
+
             color: #2d3436;
 
             margin-top: 0;
+
             margin-bottom: 25px;
 
             font-size: 24px;
+
             font-weight: 600;
         }
 
+
         .input-group {
+
             text-align: left;
+
             margin-bottom: 15px;
         }
 
+
         .input-group label {
+
             display: block;
 
             font-size: 14px;
+
             color: #555;
 
             margin-bottom: 6px;
@@ -93,12 +128,15 @@
             font-weight: 500;
         }
 
+
         .input-group input {
+
             width: 100%;
 
             padding: 12px;
 
             border: 2px solid #ddd;
+
             border-radius: 8px;
 
             font-size: 15px;
@@ -108,14 +146,18 @@
             transition: all 0.3s ease;
         }
 
+
         .input-group input:focus {
+
             border-color: #0984e3;
 
             box-shadow:
                 0 0 8px rgba(9, 132, 227, 0.2);
         }
 
+
         .register-btn {
+
             width: 100%;
 
             padding: 14px;
@@ -125,9 +167,11 @@
             color: white;
 
             border: none;
+
             border-radius: 8px;
 
             font-size: 16px;
+
             font-weight: bold;
 
             cursor: pointer;
@@ -137,16 +181,23 @@
             margin-top: 10px;
         }
 
+
         .register-btn:hover {
+
             background-color: #27ae60;
         }
 
+
         .register-btn:disabled {
+
             background-color: #95a5a6;
+
             cursor: not-allowed;
         }
 
+
         .login-link {
+
             display: inline-block;
 
             margin-top: 20px;
@@ -160,44 +211,37 @@
             transition: color 0.3s;
         }
 
+
         .login-link:hover {
+
             color: #0984e3;
         }
 
-        #otpSection {
-            margin-top: 10px;
-        }
-
-        #recaptcha-container {
-            margin-top: 15px;
-            margin-bottom: 5px;
-
-            display: flex;
-            justify-content: center;
-        }
-
-        .phone-note {
-            font-size: 12px;
-            color: #777;
-            margin-top: 5px;
-            text-align: left;
-        }
     </style>
+
 </head>
+
 
 <body>
 
+
     <div class="register-card">
 
+
         <!-- CUTM Logo -->
-        <img src="logo.jpg" alt="CUTM Logo">
 
-        <h2>Create Faculty Account</h2>
+        <img
+            src="logo.jpg"
+            alt="CUTM Logo"
+        >
 
 
-        <!-- ==========================================
-             PHONE NUMBER
-        =========================================== -->
+        <h2>
+            Create Faculty Account
+        </h2>
+
+
+        <!-- Phone Number -->
 
         <div class="input-group">
 
@@ -211,81 +255,42 @@
                 placeholder="Enter 10-digit number"
                 maxlength="10"
                 autocomplete="tel"
-                inputmode="numeric"
             >
-
-            <div class="phone-note">
-                Enter your Indian 10-digit mobile number.
-            </div>
 
         </div>
 
 
-        <!-- ==========================================
-             RECAPTCHA
-        =========================================== -->
+        <!-- Password -->
 
-        <div id="recaptcha-container"></div>
+        <div class="input-group">
 
-
-        <!-- ==========================================
-             SEND OTP BUTTON
-        =========================================== -->
-
-        <button
-            type="button"
-            id="sendOtpButton"
-            onclick="sendOTP()"
-            class="register-btn"
-        >
-            Send OTP
-        </button>
-
-
-        <!-- ==========================================
-             OTP SECTION
-        =========================================== -->
-
-        <div
-            class="input-group"
-            id="otpSection"
-            style="display: none;"
-        >
-
-            <label for="otp">
-                Enter OTP
+            <label for="password">
+                Create Password
             </label>
 
             <input
-                type="text"
-                id="otp"
-                placeholder="Enter 6-digit OTP"
-                maxlength="6"
-                inputmode="numeric"
-                autocomplete="one-time-code"
+                type="password"
+                id="password"
+                placeholder="Choose a secure password"
+                autocomplete="new-password"
             >
 
         </div>
 
 
-        <!-- ==========================================
-             VERIFY BUTTON
-        =========================================== -->
+        <!-- Sign Up -->
 
         <button
             type="button"
-            id="verifyButton"
-            onclick="verifyOTP()"
+            id="signupButton"
+            onclick="handleSignUp()"
             class="register-btn"
-            style="display: none;"
         >
-            Verify & Register
+            Sign Up
         </button>
 
 
-        <!-- ==========================================
-             LOGIN LINK
-        =========================================== -->
+        <!-- Login Link -->
 
         <a
             href="faculty-login.html"
@@ -294,10 +299,12 @@
             Already have an ID? Login here
         </a>
 
+
     </div>
 
 
     <script>
+
 
         // ==========================================
         // FIREBASE CONFIGURATION
@@ -306,7 +313,7 @@
         const firebaseConfig = {
 
             apiKey:
-                "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
+                "AIzaSyBY9y1SLPTVekU7hg3QQYGTJXc0fjNoHU",
 
             authDomain:
                 "cutm-library.firebaseapp.com",
@@ -333,57 +340,21 @@
         // INITIALIZE FIREBASE
         // ==========================================
 
-        firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(
+            firebaseConfig
+        );
+
 
         const database =
             firebase.database();
 
-        const auth =
-            firebase.auth();
-
 
         // ==========================================
-        // OTP VARIABLE
+        // SIGN UP FUNCTION
         // ==========================================
 
-        let confirmationResult = null;
+        function handleSignUp() {
 
-
-        // ==========================================
-        // CREATE RECAPTCHA
-        // ==========================================
-
-        let recaptchaVerifier =
-            new firebase.auth.RecaptchaVerifier(
-                "recaptcha-container",
-                {
-                    size: "normal",
-
-                    callback: function(response) {
-
-                        console.log(
-                            "reCAPTCHA verified."
-                        );
-
-                    },
-
-                    "expired-callback": function() {
-
-                        alert(
-                            "reCAPTCHA expired. " +
-                            "Please complete it again."
-                        );
-
-                    }
-                }
-            );
-
-
-        // ==========================================
-        // SEND OTP
-        // ==========================================
-
-        function sendOTP() {
 
             const phone =
                 document
@@ -392,17 +363,43 @@
                     .trim();
 
 
-            const sendOtpButton =
+            const password =
+                document
+                    .getElementById("password")
+                    .value
+                    .trim();
+
+
+            const signupButton =
                 document.getElementById(
-                    "sendOtpButton"
+                    "signupButton"
                 );
 
 
             // ==========================================
-            // CHECK PHONE
+            // CHECK EMPTY FIELDS
             // ==========================================
 
-            if (!/^[0-9]{10}$/.test(phone)) {
+            if (
+                phone === "" ||
+                password === ""
+            ) {
+
+                alert(
+                    "Please complete all registration fields."
+                );
+
+                return;
+            }
+
+
+            // ==========================================
+            // CHECK PHONE NUMBER
+            // ==========================================
+
+            if (
+                !/^[0-9]{10}$/.test(phone)
+            ) {
 
                 alert(
                     "Please enter a valid 10-digit phone number."
@@ -413,294 +410,92 @@
 
 
             // ==========================================
+            // CHECK PASSWORD
+            // ==========================================
+
+            if (password.length < 4) {
+
+                alert(
+                    "Password must contain at least 4 characters."
+                );
+
+                return;
+            }
+
+
+            // ==========================================
             // DISABLE BUTTON
             // ==========================================
 
-            sendOtpButton.disabled = true;
+            signupButton.disabled = true;
 
-            sendOtpButton.innerText =
-                "Checking...";
+            signupButton.innerText =
+                "Creating Account...";
 
 
             // ==========================================
-            // CHECK EXISTING FACULTY
+            // FACULTY DATABASE LOCATION
             // ==========================================
 
-            database
-                .ref("faculty/" + phone)
+            const facultyRef =
+                database.ref(
+                    "faculty/" + phone
+                );
+
+
+            // ==========================================
+            // CHECK IF PHONE ALREADY EXISTS
+            // ==========================================
+
+            facultyRef
                 .once("value")
 
                 .then(function(snapshot) {
 
 
-                    // ==========================================
-                    // ACCOUNT ALREADY EXISTS
-                    // ==========================================
-
                     if (snapshot.exists()) {
 
                         alert(
-                            "This phone number is already registered.\n\n" +
-                            "Please use Faculty Login."
+                            "Registration Failed!\n\n" +
+                            "This Phone Number already exists."
                         );
 
 
-                        sendOtpButton.disabled =
+                        signupButton.disabled =
                             false;
 
-                        sendOtpButton.innerText =
-                            "Send OTP";
+
+                        signupButton.innerText =
+                            "Sign Up";
 
 
-                        return null;
-                    }
-
-
-                    // ==========================================
-                    // SEND OTP
-                    // ==========================================
-
-                    const phoneNumber =
-                        "+91" + phone;
-
-
-                    sendOtpButton.innerText =
-                        "Sending OTP...";
-
-
-                    return auth
-                        .signInWithPhoneNumber(
-                            phoneNumber,
-                            recaptchaVerifier
-                        );
-
-                })
-
-                .then(function(result) {
-
-                    // No result means account already exists
-                    if (!result) {
                         return;
                     }
 
 
-                    // Save confirmation result
-                    confirmationResult =
-                        result;
-
-
-                    alert(
-                        "OTP sent successfully to +91 " +
-                        phone
-                    );
-
-
                     // ==========================================
-                    // SHOW OTP FIELD
+                    // CREATE FACULTY ACCOUNT
                     // ==========================================
 
-                    document
-                        .getElementById("otpSection")
-                        .style.display = "block";
+                    return facultyRef.set({
 
+                        password:
+                            password,
 
-                    // ==========================================
-                    // SHOW VERIFY BUTTON
-                    // ==========================================
+                        phone:
+                            phone,
 
-                    document
-                        .getElementById("verifyButton")
-                        .style.display = "block";
+                        createdAt:
+                            new Date()
+                                .toISOString()
 
-
-                    // ==========================================
-                    // HIDE SEND BUTTON
-                    // ==========================================
-
-                    sendOtpButton.style.display =
-                        "none";
+                    });
 
                 })
 
-                .catch(function(error) {
-
-                    console.error(
-                        "OTP Error:",
-                        error
-                    );
-
-
-                    let message =
-                        error.message;
-
-
-                    if (
-                        error.code ===
-                        "auth/invalid-phone-number"
-                    ) {
-
-                        message =
-                            "The phone number is invalid.";
-
-                    }
-
-                    else if (
-                        error.code ===
-                        "auth/too-many-requests"
-                    ) {
-
-                        message =
-                            "Too many OTP requests. " +
-                            "Please try again later.";
-
-                    }
-
-                    else if (
-                        error.code ===
-                        "auth/quota-exceeded"
-                    ) {
-
-                        message =
-                            "Firebase SMS quota has been exceeded. " +
-                            "Please try again later.";
-
-                    }
-
-
-                    alert(
-                        "Unable to send OTP.\n\n" +
-                        message
-                    );
-
-
-                    sendOtpButton.disabled =
-                        false;
-
-                    sendOtpButton.innerText =
-                        "Send OTP";
-
-
-                    // ==========================================
-                    // RESET RECAPTCHA
-                    // ==========================================
-
-                    resetRecaptcha();
-
-                });
-
-        }
-
-
-        // ==========================================
-        // VERIFY OTP
-        // ==========================================
-
-        function verifyOTP() {
-
-            const phone =
-                document
-                    .getElementById("phone")
-                    .value
-                    .trim();
-
-
-            const otp =
-                document
-                    .getElementById("otp")
-                    .value
-                    .trim();
-
-
-            const verifyButton =
-                document.getElementById(
-                    "verifyButton"
-                );
-
-
-            // ==========================================
-            // CHECK OTP
-            // ==========================================
-
-            if (!/^[0-9]{6}$/.test(otp)) {
-
-                alert(
-                    "Please enter the 6-digit OTP."
-                );
-
-                return;
-            }
-
-
-            // ==========================================
-            // CHECK CONFIRMATION
-            // ==========================================
-
-            if (!confirmationResult) {
-
-                alert(
-                    "Please request an OTP first."
-                );
-
-                return;
-            }
-
-
-            // ==========================================
-            // DISABLE BUTTON
-            // ==========================================
-
-            verifyButton.disabled =
-                true;
-
-            verifyButton.innerText =
-                "Verifying...";
-
-
-            // ==========================================
-            // VERIFY OTP
-            // ==========================================
-
-            confirmationResult
-                .confirm(otp)
-
-                .then(function(result) {
-
-                    const user =
-                        result.user;
-
-
-                    console.log(
-                        "Firebase Auth UID:",
-                        user.uid
-                    );
-
-
-                    // ==========================================
-                    // SAVE FACULTY INFORMATION
-                    // ==========================================
-
-                    return database
-                        .ref("faculty/" + phone)
-                        .set({
-
-                            phone:
-                                phone,
-
-                            uid:
-                                user.uid,
-
-                            authProvider:
-                                "phone-otp",
-
-                            createdAt:
-                                new Date()
-                                    .toISOString()
-
-                        });
-
-                })
 
                 .then(function() {
+
 
                     alert(
                         "Faculty Account Created Successfully!"
@@ -711,105 +506,41 @@
                     // GO TO LOGIN
                     // ==========================================
 
-                    window.location.replace(
-                        "faculty-login.html"
-                    );
+                    window.location.href =
+                        "faculty-login.html";
 
                 })
 
+
                 .catch(function(error) {
 
+
                     console.error(
-                        "OTP Verification Error:",
+                        "Firebase Error:",
                         error
                     );
 
 
-                    let message =
-                        error.message;
-
-
-                    if (
-                        error.code ===
-                        "auth/invalid-verification-code"
-                    ) {
-
-                        message =
-                            "The OTP is incorrect. " +
-                            "Please check the SMS and try again.";
-
-                    }
-
-                    else if (
-                        error.code ===
-                        "auth/code-expired"
-                    ) {
-
-                        message =
-                            "This OTP has expired. " +
-                            "Please request a new OTP.";
-
-                    }
-
-
                     alert(
-                        "Registration failed.\n\n" +
-                        message
+                        "Registration Failed!\n\n" +
+                        error.message
                     );
 
 
-                    verifyButton.disabled =
+                    signupButton.disabled =
                         false;
 
-                    verifyButton.innerText =
-                        "Verify & Register";
+
+                    signupButton.innerText =
+                        "Sign Up";
 
                 });
 
         }
 
-
-        // ==========================================
-        // RESET RECAPTCHA
-        // ==========================================
-
-        function resetRecaptcha() {
-
-            try {
-
-                recaptchaVerifier.clear();
-
-            }
-
-            catch (error) {
-
-                console.log(
-                    "reCAPTCHA clear error:",
-                    error
-                );
-
-            }
-
-
-            recaptchaVerifier =
-                new firebase.auth.RecaptchaVerifier(
-                    "recaptcha-container",
-                    {
-                        size: "normal",
-
-                        callback: function(response) {
-
-                            console.log(
-                                "reCAPTCHA verified."
-                            );
-
-                        }
-                    }
-                );
-
-        }
-
     </script>
 
+
 </body>
+
 </html>
