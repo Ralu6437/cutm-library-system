@@ -3,19 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Create Faculty Account - CUTM Library</title>
-    
-    <!-- FIXED: Universal, highly compatible CDNJS library links -->
-    <script src="https://cloudflare.com"></script>
-    <script src="https://cloudflare.com"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('library-bg.png') #2d3436 no-repeat center center fixed;
+
+            background:
+                linear-gradient(
+                    rgba(0, 0, 0, 0.6),
+                    rgba(0, 0, 0, 0.6)
+                ),
+                url('library-bg.png');
+
+            background-color: #2d3436;
+            background-repeat: no-repeat;
+            background-position: center center;
             background-size: cover;
+            background-attachment: fixed;
+
             height: 100vh;
             margin: 0;
+
             display: flex;
             justify-content: center;
             align-items: center;
@@ -23,23 +41,35 @@
 
         .register-card {
             background-color: rgba(255, 255, 255, 0.95);
+
             padding: 40px;
+
             border-radius: 16px;
-            box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+
+            box-shadow:
+                0 12px 36px rgba(0, 0, 0, 0.4);
+
             width: 100%;
             max-width: 380px;
+
             text-align: center;
+
             backdrop-filter: blur(8px);
         }
 
         .register-card img {
             height: 65px;
+            width: auto;
+
             margin-bottom: 15px;
         }
 
         h2 {
             color: #2d3436;
+
+            margin-top: 0;
             margin-bottom: 25px;
+
             font-size: 24px;
             font-weight: 600;
         }
@@ -51,39 +81,56 @@
 
         .input-group label {
             display: block;
+
             font-size: 14px;
             color: #555;
+
             margin-bottom: 6px;
+
             font-weight: 500;
         }
 
         .input-group input {
             width: 100%;
+
             padding: 12px;
+
             border: 2px solid #ddd;
             border-radius: 8px;
+
             font-size: 15px;
-            box-sizing: border-box;
+
+            outline: none;
+
             transition: all 0.3s ease;
         }
 
         .input-group input:focus {
             border-color: #0984e3;
-            outline: none;
-            box-shadow: 0 0 8px rgba(9, 132, 227, 0.2);
+
+            box-shadow:
+                0 0 8px rgba(9, 132, 227, 0.2);
         }
 
         .register-btn {
             width: 100%;
+
             padding: 14px;
+
             background-color: #2ecc71;
+
             color: white;
+
             border: none;
             border-radius: 8px;
+
             font-size: 16px;
             font-weight: bold;
+
             cursor: pointer;
+
             transition: background 0.3s ease;
+
             margin-top: 10px;
         }
 
@@ -91,12 +138,22 @@
             background-color: #27ae60;
         }
 
+        .register-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
         .login-link {
             display: inline-block;
+
             margin-top: 20px;
+
             color: #74b9ff;
+
             text-decoration: none;
+
             font-size: 14px;
+
             transition: color 0.3s;
         }
 
@@ -105,69 +162,243 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="register-card">
+
+        <!-- CUTM Logo -->
         <img src="logo.jpg" alt="CUTM Logo">
+
         <h2>Create Faculty Account</h2>
-        
+
+        <!-- Phone Number -->
         <div class="input-group">
             <label for="phone">Phone Number</label>
-            <input type="text" id="phone" placeholder="Enter 10-digit number" required>
+
+            <input
+                type="tel"
+                id="phone"
+                placeholder="Enter 10-digit number"
+                maxlength="10"
+                autocomplete="tel"
+            >
         </div>
-        
+
+        <!-- Password -->
         <div class="input-group">
             <label for="password">Create Password</label>
-            <input type="password" id="password" placeholder="Choose a secure password" required>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Choose a secure password"
+                autocomplete="new-password"
+            >
         </div>
-        
-        <button onclick="handleSignUp()" class="register-btn">Sign Up</button>
-        <br>
-        <a href="faculty-login.html" class="login-link">Already have an ID? Login here</a>
+
+        <!-- Sign Up -->
+        <button
+            type="button"
+            id="signupButton"
+            onclick="handleSignUp()"
+            class="register-btn"
+        >
+            Sign Up
+        </button>
+
+        <a
+            href="faculty-login.html"
+            class="login-link"
+        >
+            Already have an ID? Login here
+        </a>
+
     </div>
 
+
     <script>
-        // FIXED CONFIGURATION: Restored complete properties mapping your true databaseURL
+
+        // ==========================================
+        // FIREBASE CONFIGURATION
+        // ==========================================
+
         const firebaseConfig = {
+
             apiKey: "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
-            authDomain: "://firebaseapp.com",
+
+            authDomain: "cutm-library.firebaseapp.com",
+
             projectId: "cutm-library",
+
             storageBucket: "cutm-library.firebasestorage.app",
+
             messagingSenderId: "719135627027",
+
             appId: "1:719135627027:web:1b7c73157ea4675a816ce6",
-            databaseURL: "https://firebasedatabase.app"
+
+            databaseURL:
+                "https://cutm-library-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
-        // Initialize Firebase app connection instance securely
+
+        // ==========================================
+        // INITIALIZE FIREBASE
+        // ==========================================
+
         firebase.initializeApp(firebaseConfig);
+
         const database = firebase.database();
 
-        function handleSignUp() {
-            const phone = document.getElementById('phone').value.trim();
-            const password = document.getElementById('password').value.trim();
 
-            if(!phone || !password) {
+        // ==========================================
+        // SIGN UP FUNCTION
+        // ==========================================
+
+        function handleSignUp() {
+
+            const phone =
+                document.getElementById("phone").value.trim();
+
+            const password =
+                document.getElementById("password").value.trim();
+
+            const signupButton =
+                document.getElementById("signupButton");
+
+
+            // ------------------------------------------
+            // CHECK EMPTY FIELDS
+            // ------------------------------------------
+
+            if (phone === "" || password === "") {
+
                 alert("Please complete all registration fields.");
+
                 return;
             }
 
-            const facultyRef = database.ref('faculty/' + phone);
-            
-            facultyRef.once('value', (snapshot) => {
-                if(snapshot.exists()) {
-                    alert("Registration Failed: This Phone Number already exists!");
-                } else {
-                    facultyRef.set({ password: password }, (error) => {
-                        if (error) {
-                            alert("Database synchronization failed: " + error.message);
-                        } else {
-                            alert("Faculty Account Created Successfully!");
-                            window.location.href = "faculty-login.html";
-                        }
+
+            // ------------------------------------------
+            // CHECK PHONE NUMBER
+            // ------------------------------------------
+
+            if (!/^[0-9]{10}$/.test(phone)) {
+
+                alert("Please enter a valid 10-digit phone number.");
+
+                return;
+            }
+
+
+            // ------------------------------------------
+            // CHECK PASSWORD
+            // ------------------------------------------
+
+            if (password.length < 4) {
+
+                alert("Password must contain at least 4 characters.");
+
+                return;
+            }
+
+
+            // ------------------------------------------
+            // DISABLE BUTTON
+            // ------------------------------------------
+
+            signupButton.disabled = true;
+
+            signupButton.innerText = "Creating Account...";
+
+
+            // ------------------------------------------
+            // FACULTY DATABASE LOCATION
+            // ------------------------------------------
+
+            const facultyRef =
+                database.ref("faculty/" + phone);
+
+
+            // ------------------------------------------
+            // CHECK IF PHONE ALREADY EXISTS
+            // ------------------------------------------
+
+            facultyRef.once("value")
+
+                .then(function(snapshot) {
+
+                    if (snapshot.exists()) {
+
+                        alert(
+                            "Registration Failed!\n\n" +
+                            "This Phone Number already exists."
+                        );
+
+                        signupButton.disabled = false;
+
+                        signupButton.innerText = "Sign Up";
+
+                        return;
+                    }
+
+
+                    // ------------------------------------------
+                    // CREATE FACULTY ACCOUNT
+                    // ------------------------------------------
+
+                    return facultyRef.set({
+
+                        password: password,
+
+                        phone: phone,
+
+                        createdAt: new Date().toISOString()
+
                     });
-                }
-            });
+
+                })
+
+                .then(function() {
+
+                    /*
+                     * If the account was successfully created,
+                     * redirect to faculty login page.
+                     */
+
+                    if (database) {
+
+                        alert(
+                            "Faculty Account Created Successfully!"
+                        );
+
+                        window.location.href =
+                            "faculty-login.html";
+                    }
+
+                })
+
+                .catch(function(error) {
+
+                    console.error(
+                        "Firebase Error:",
+                        error
+                    );
+
+                    alert(
+                        "Registration Failed!\n\n" +
+                        error.message
+                    );
+
+                    signupButton.disabled = false;
+
+                    signupButton.innerText = "Sign Up";
+
+                });
+
         }
+
     </script>
+
 </body>
 </html>
