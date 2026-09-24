@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Faculty Account - CUTM Library</title>
     
-    <!-- FIXED: Using bulletproof CDNJS alternative source links to bypass network blocks completely -->
+    <!-- FIXED: Universal, highly compatible CDNJS library links -->
     <script src="https://cloudflare.com"></script>
     <script src="https://cloudflare.com"></script>
 
@@ -127,6 +127,7 @@
     </div>
 
     <script>
+        // FIXED CONFIGURATION: Restored complete properties mapping your true databaseURL
         const firebaseConfig = {
             apiKey: "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
             authDomain: "://firebaseapp.com",
@@ -137,7 +138,7 @@
             databaseURL: "https://firebasedatabase.app"
         };
 
-        // Initialize Firebase securely in sequential order
+        // Initialize Firebase app connection instance securely
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
