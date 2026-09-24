@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Manage Inventory - CUTM Library</title>
 
     <!-- Firebase SDK -->
@@ -10,6 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -21,7 +23,10 @@
             padding: 20px;
         }
 
-        /* Top Navigation Header */
+        /* =========================
+           NAVBAR
+        ========================= */
+
         .navbar {
             background: #2c3e50;
             padding: 15px 30px;
@@ -55,7 +60,10 @@
             background: #2980b9;
         }
 
-        /* Workspace */
+        /* =========================
+           WORKSPACE
+        ========================= */
+
         .workspace {
             display: grid;
             grid-template-columns: 1fr 1.5fr;
@@ -79,7 +87,10 @@
             padding-bottom: 10px;
         }
 
-        /* Form */
+        /* =========================
+           FORM
+        ========================= */
+
         .form-group {
             display: flex;
             flex-direction: column;
@@ -123,12 +134,15 @@
             background: #27ae60;
         }
 
-        /* Book List */
+        /* =========================
+           BOOK LIST
+        ========================= */
+
         .book-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 500px;
+            max-height: 550px;
             overflow-y: auto;
             padding-right: 5px;
         }
@@ -141,26 +155,34 @@
             padding: 12px;
             border-radius: 8px;
             border: 1px solid #e2e8f0;
+            gap: 15px;
         }
 
         .book-info {
             display: flex;
             align-items: center;
             gap: 15px;
+            min-width: 0;
         }
 
         .book-row img {
-            width: 45px;
-            height: 60px;
+            width: 55px;
+            height: 70px;
             object-fit: cover;
             border-radius: 4px;
             background: #ddd;
+            flex-shrink: 0;
+        }
+
+        .book-details {
+            min-width: 0;
         }
 
         .book-details h4 {
             margin: 0;
             color: #2c3e50;
             font-size: 15px;
+            word-break: break-word;
         }
 
         .book-details p {
@@ -169,17 +191,79 @@
             font-size: 12px;
         }
 
+        /* =========================
+           QUANTITY / ACTIONS
+        ========================= */
+
+        .book-actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex-shrink: 0;
+        }
+
         .badge {
             background: #e2e8f0;
             color: #4a5568;
-            padding: 4px 10px;
+            padding: 7px 10px;
             border-radius: 12px;
             font-size: 12px;
             font-weight: bold;
             white-space: nowrap;
+            min-width: 65px;
+            text-align: center;
         }
 
+        .qty-btn {
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            font-size: 18px;
+            line-height: 32px;
+            padding: 0;
+        }
+
+        .minus-btn {
+            background: #e67e22;
+        }
+
+        .minus-btn:hover {
+            background: #d35400;
+        }
+
+        .plus-btn {
+            background: #3498db;
+        }
+
+        .plus-btn:hover {
+            background: #2980b9;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 11px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
         @media (max-width: 800px) {
+
             .workspace {
                 grid-template-columns: 1fr;
             }
@@ -189,50 +273,91 @@
                 gap: 15px;
                 text-align: center;
             }
+
+            .book-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .book-info {
+                width: 100%;
+            }
+
+            .book-actions {
+                justify-content: flex-end;
+                width: 100%;
+            }
         }
+
     </style>
 </head>
 
 <body>
 
-    <!-- Header Navbar -->
+    <!-- =========================
+         HEADER
+    ========================= -->
+
     <div class="navbar">
+
         <h2>Inventory Control Command</h2>
+
         <a href="faculty-dashboard.html" class="nav-btn">
             ← Back to Dashboard
         </a>
+
     </div>
 
-    <!-- Workspace -->
+
+    <!-- =========================
+         WORKSPACE
+    ========================= -->
+
     <div class="workspace">
 
-        <!-- Add Book Form -->
+        <!-- =========================
+             ADD BOOK FORM
+        ========================= -->
+
         <div class="card-box">
 
-            <h3 class="section-title">Add New Title</h3>
+            <h3 class="section-title">
+                Add New Title
+            </h3>
+
 
             <div class="form-group">
+
                 <label>Book Title Name</label>
+
                 <input
                     type="text"
                     id="book-title"
                     placeholder="e.g., Programming in C++"
                     class="form-input"
                 >
+
             </div>
 
+
             <div class="form-group">
+
                 <label>Author Name</label>
+
                 <input
                     type="text"
                     id="book-author"
                     placeholder="e.g., E. Balagurusamy"
                     class="form-input"
                 >
+
             </div>
 
+
             <div class="form-group">
+
                 <label>Initial Available Quantity</label>
+
                 <input
                     type="number"
                     id="book-qty"
@@ -240,32 +365,48 @@
                     class="form-input"
                     min="1"
                 >
+
             </div>
 
+
             <div class="form-group">
+
                 <label>Book Cover Image URL</label>
+
                 <input
                     type="text"
                     id="book-pic"
                     placeholder="Paste image web address"
                     class="form-input"
                 >
+
             </div>
 
-            <button class="btn-add" onclick="addBookToDB()">
+
+            <button
+                class="btn-add"
+                onclick="addBookToDB()"
+            >
                 Add to System Inventory
             </button>
 
         </div>
 
-        <!-- Inventory -->
+
+        <!-- =========================
+             INVENTORY
+        ========================= -->
+
         <div class="card-box">
 
             <h3 class="section-title">
                 Active Stocks Overview
             </h3>
 
-            <div class="book-list" id="inventoryFeed">
+            <div
+                class="book-list"
+                id="inventoryFeed"
+            >
                 Retrieving storage records...
             </div>
 
@@ -273,122 +414,272 @@
 
     </div>
 
+
+    <!-- =========================
+         FIREBASE + JAVASCRIPT
+    ========================= -->
+
     <script>
 
-        // Firebase Configuration
+        /* =========================
+           FIREBASE CONFIGURATION
+        ========================= */
+
         const firebaseConfig = {
-            apiKey: "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
-            authDomain: "cutm-library.firebaseapp.com",
-            projectId: "cutm-library",
-            storageBucket: "cutm-library.firebasestorage.app",
-            messagingSenderId: "719135627027",
-            appId: "1:719135627027:web:1b7c73157ea4675a816ce6",
-            databaseURL: "https://cutm-library-default-rtdb.asia-southeast1.firebasedatabase.app"
+
+            apiKey:
+                "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
+
+            authDomain:
+                "cutm-library.firebaseapp.com",
+
+            projectId:
+                "cutm-library",
+
+            storageBucket:
+                "cutm-library.firebasestorage.app",
+
+            messagingSenderId:
+                "719135627027",
+
+            appId:
+                "1:719135627027:web:1b7c73157ea4675a816ce6",
+
+            databaseURL:
+                "https://cutm-library-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
-        // Initialize Firebase
+
+        /* =========================
+           INITIALIZE FIREBASE
+        ========================= */
+
         firebase.initializeApp(firebaseConfig);
 
-        // Database reference
         const database = firebase.database();
 
 
-        // Load books from Firebase in real time
-        database.ref('library_books').on('value', (snap) => {
+        /* =========================
+           LOAD BOOKS
+        ========================= */
 
-            const feedZone = document.getElementById('inventoryFeed');
+        database.ref('library_books').on(
+            'value',
 
-            if (!snap.exists()) {
+            function(snapshot) {
 
-                feedZone.innerHTML = `
-                    <p style="
-                        color:#7f8c8d;
-                        text-align:center;
-                    ">
-                        No inventory rows found.
-                    </p>
-                `;
+                const feedZone =
+                    document.getElementById('inventoryFeed');
 
-                return;
-            }
 
-            let html = "";
+                /* No books */
 
-            snap.forEach(child => {
+                if (!snapshot.exists()) {
 
-                const b = child.val();
+                    feedZone.innerHTML = `
+                        <p style="
+                            color:#7f8c8d;
+                            text-align:center;
+                        ">
+                            No inventory rows found.
+                        </p>
+                    `;
 
-                const bookName = b.name || "Unknown Book";
-                const author = b.author || "Unknown Author";
-                const rating = b.rating || "5.0";
-                const available = b.available || 0;
+                    return;
+                }
 
-                const image = b.pic || "logo.jpg";
 
-                html += `
-                    <div class="book-row">
+                let html = "";
 
-                        <div class="book-info">
 
-                            <img
-                                src="${image}"
-                                alt="Book Cover"
-                                onerror="this.onerror=null; this.src='logo.jpg';"
-                            >
+                /* Read every book */
 
-                            <div class="book-details">
+                snapshot.forEach(function(child) {
 
-                                <h4>
-                                    ${bookName}
-                                </h4>
+                    const b = child.val();
 
-                                <p>
-                                    By ${author} |
-                                    Rating: ⭐ ${rating}
-                                </p>
+                    const bookId = child.key;
+
+                    const bookName =
+                        b.name || "Unknown Book";
+
+                    const author =
+                        b.author || "Unknown Author";
+
+                    const rating =
+                        b.rating || "5.0";
+
+                    const available =
+                        Number(b.available || 0);
+
+                    const image =
+                        b.pic || "logo.jpg";
+
+
+                    html += `
+
+                        <div class="book-row">
+
+                            <!-- BOOK INFORMATION -->
+
+                            <div class="book-info">
+
+                                <img
+                                    src="${escapeHtml(image)}"
+                                    alt="Book Cover"
+                                    onerror="
+                                        this.onerror=null;
+                                        this.src='logo.jpg';
+                                    "
+                                >
+
+                                <div class="book-details">
+
+                                    <h4>
+                                        ${escapeHtml(bookName)}
+                                    </h4>
+
+                                    <p>
+                                        By ${escapeHtml(author)}
+                                        |
+                                        Rating: ⭐ ${rating}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- BOOK ACTIONS -->
+
+                            <div class="book-actions">
+
+                                <!-- DECREASE -->
+
+                                <button
+                                    class="qty-btn minus-btn"
+                                    onclick="
+                                        decreaseQuantity(
+                                            '${bookId}',
+                                            ${available}
+                                        )
+                                    "
+                                    title="Decrease quantity"
+                                >
+                                    −
+                                </button>
+
+
+                                <!-- CURRENT QUANTITY -->
+
+                                <div class="badge">
+                                    Qty: ${available}
+                                </div>
+
+
+                                <!-- INCREASE -->
+
+                                <button
+                                    class="qty-btn plus-btn"
+                                    onclick="
+                                        increaseQuantity(
+                                            '${bookId}',
+                                            ${available}
+                                        )
+                                    "
+                                    title="Increase quantity"
+                                >
+                                    +
+                                </button>
+
+
+                                <!-- DELETE -->
+
+                                <button
+                                    class="delete-btn"
+                                    onclick="
+                                        deleteBook(
+                                            '${bookId}',
+                                            '${escapeJs(bookName)}'
+                                        )
+                                    "
+                                >
+                                    Remove
+                                </button>
 
                             </div>
 
                         </div>
 
-                        <div class="badge">
-                            Qty: ${available}
-                        </div>
+                    `;
 
-                    </div>
+                });
+
+
+                feedZone.innerHTML = html;
+
+            },
+
+
+            /* Firebase error */
+
+            function(error) {
+
+                document.getElementById(
+                    'inventoryFeed'
+                ).innerHTML = `
+
+                    <p style="
+                        color:red;
+                        text-align:center;
+                    ">
+                        Failed to load inventory:
+                        ${error.message}
+                    </p>
+
                 `;
-            });
 
-            feedZone.innerHTML = html;
+            }
 
-        }, (error) => {
-
-            document.getElementById('inventoryFeed').innerHTML = `
-                <p style="color:red; text-align:center;">
-                    Failed to load inventory: ${error.message}
-                </p>
-            `;
-
-        });
+        );
 
 
-        // Add new book
+        /* =========================
+           ADD NEW BOOK
+        ========================= */
+
         function addBookToDB() {
 
             const name =
-                document.getElementById('book-title').value.trim();
+                document
+                    .getElementById('book-title')
+                    .value
+                    .trim();
+
 
             const author =
-                document.getElementById('book-author').value.trim();
+                document
+                    .getElementById('book-author')
+                    .value
+                    .trim();
+
 
             const count =
-                document.getElementById('book-qty').value.trim();
+                document
+                    .getElementById('book-qty')
+                    .value
+                    .trim();
+
 
             const pic =
-                document.getElementById('book-pic').value.trim();
+                document
+                    .getElementById('book-pic')
+                    .value
+                    .trim();
 
 
-            // Basic validation
+            /* Validation */
+
             if (!name || !author || !count) {
 
                 alert(
@@ -399,10 +690,16 @@
             }
 
 
-            // Validate quantity
-            const quantity = parseInt(count);
+            /* Quantity validation */
 
-            if (isNaN(quantity) || quantity < 1) {
+            const quantity =
+                parseInt(count);
+
+
+            if (
+                isNaN(quantity) ||
+                quantity < 1
+            ) {
 
                 alert(
                     "Quantity must be at least 1."
@@ -412,58 +709,275 @@
             }
 
 
-            // Default image
-            const bookImage = pic || "logo.jpg";
+            /* Default image */
+
+            const bookImage =
+                pic || "logo.jpg";
 
 
-            // Generate unique Firebase book ID
-            const newId = "b_" + Date.now();
+            /* Generate unique ID */
+
+            const newId =
+                "b_" + Date.now();
 
 
-            // Save book to Firebase
-            database.ref('library_books/' + newId).set({
+            /* Save */
 
-                id: newId,
+            database
+                .ref(
+                    'library_books/' + newId
+                )
+                .set({
 
-                name: name,
+                    id: newId,
 
-                author: author,
+                    name: name,
 
-                rating: 5.0,
+                    author: author,
 
-                available: quantity,
+                    rating: 5.0,
 
-                pic: bookImage,
+                    available: quantity,
 
-                createdAt: Date.now()
+                    pic: bookImage,
 
-            })
+                    createdAt: Date.now()
 
-            .then(() => {
+                })
+
+
+                .then(function() {
+
+                    alert(
+                        `"${name}" successfully added to the library inventory.`
+                    );
+
+
+                    /* Clear form */
+
+                    document.getElementById(
+                        'book-title'
+                    ).value = "";
+
+
+                    document.getElementById(
+                        'book-author'
+                    ).value = "";
+
+
+                    document.getElementById(
+                        'book-qty'
+                    ).value = "";
+
+
+                    document.getElementById(
+                        'book-pic'
+                    ).value = "";
+
+                })
+
+
+                .catch(function(error) {
+
+                    alert(
+                        "Inventory update failed: " +
+                        error.message
+                    );
+
+                });
+
+        }
+
+
+        /* =========================
+           INCREASE QUANTITY
+        ========================= */
+
+        function increaseQuantity(
+            bookId,
+            currentQuantity
+        ) {
+
+            const quantity =
+                Number(currentQuantity);
+
+
+            const newQuantity =
+                quantity + 1;
+
+
+            database
+                .ref(
+                    'library_books/' +
+                    bookId +
+                    '/available'
+                )
+                .set(newQuantity)
+
+
+                .then(function() {
+
+                    console.log(
+                        "Quantity increased"
+                    );
+
+                })
+
+
+                .catch(function(error) {
+
+                    alert(
+                        "Failed to increase quantity: " +
+                        error.message
+                    );
+
+                });
+
+        }
+
+
+        /* =========================
+           DECREASE QUANTITY
+        ========================= */
+
+        function decreaseQuantity(
+            bookId,
+            currentQuantity
+        ) {
+
+            const quantity =
+                Number(currentQuantity);
+
+
+            /* Don't allow negative */
+
+            if (quantity <= 0) {
 
                 alert(
-                    `"${name}" successfully added to the library inventory.`
+                    "Quantity is already 0."
+                );
+
+                return;
+            }
+
+
+            const newQuantity =
+                quantity - 1;
+
+
+            database
+                .ref(
+                    'library_books/' +
+                    bookId +
+                    '/available'
+                )
+                .set(newQuantity)
+
+
+                .then(function() {
+
+                    console.log(
+                        "Quantity decreased"
+                    );
+
+                })
+
+
+                .catch(function(error) {
+
+                    alert(
+                        "Failed to decrease quantity: " +
+                        error.message
+                    );
+
+                });
+
+        }
+
+
+        /* =========================
+           DELETE BOOK
+        ========================= */
+
+        function deleteBook(
+            bookId,
+            bookName
+        ) {
+
+            const confirmDelete =
+                confirm(
+                    'Are you sure you want to completely remove "' +
+                    bookName +
+                    '" from the library?'
                 );
 
 
-                // Clear form
-                document.getElementById('book-title').value = "";
+            if (!confirmDelete) {
 
-                document.getElementById('book-author').value = "";
+                return;
 
-                document.getElementById('book-qty').value = "";
+            }
 
-                document.getElementById('book-pic').value = "";
 
-            })
+            database
+                .ref(
+                    'library_books/' +
+                    bookId
+                )
+                .remove()
 
-            .catch((error) => {
 
-                alert(
-                    "Inventory update failed: " + error.message
-                );
+                .then(function() {
 
-            });
+                    alert(
+                        '"' +
+                        bookName +
+                        '" has been removed from inventory.'
+                    );
+
+                })
+
+
+                .catch(function(error) {
+
+                    alert(
+                        "Failed to remove book: " +
+                        error.message
+                    );
+
+                });
+
+        }
+
+
+        /* =========================
+           HTML ESCAPE
+        ========================= */
+
+        function escapeHtml(text) {
+
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        /* =========================
+           JAVASCRIPT STRING ESCAPE
+        ========================= */
+
+        function escapeJs(text) {
+
+            return String(text)
+                .replace(/\\/g, "\\\\")
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '\\"')
+                .replace(/\n/g, "\\n")
+                .replace(/\r/g, "\\r");
 
         }
 
