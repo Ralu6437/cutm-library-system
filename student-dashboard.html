@@ -3,181 +3,1687 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Student Portal - CUTM Library</title>
-    
-    <!-- Firebase SDK Modules -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
-    
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f5f6fa; padding: 20px; }
-        
-        /* Top Navigation Header Styling */
-        .navbar { 
-            background: #2c3e50; padding: 15px 30px; border-radius: 10px; 
-            display: flex; justify-content: space-between; align-items: center; color: white;
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #f5f6fa;
+            padding: 20px;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 30px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .nav-actions { display: flex; gap: 15px; align-items: center; }
-        .nav-btn { background: #3498db; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 14px; }
-        .nav-btn:hover { background: #2980b9; }
-        .btn-notify { background: #f1c40f; color: #2c3e50; }
-        .btn-notify:hover { background: #f39c12; }
-        .btn-logout { background: #e74c3c; }
-        .btn-logout:hover { background: #c0392b; }
 
-        /* Search Actions Area */
-        .search-container { margin: 25px 0; display: flex; gap: 15px; align-items: center; }
-        .search-box { flex: 1; padding: 14px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; transition: border 0.3s; }
-        .search-box:focus { border-color: #3498db; }
-        .sort-select { padding: 14px; border-radius: 8px; border: 2px solid #ddd; background: white; font-size: 16px; cursor: pointer; font-weight: 500; }
-
-        /* Workspace Grid Split Layout */
-        .main-view { display: grid; grid-template-columns: 2.2fr 1fr; gap: 25px; align-items: start; }
-        .card-box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .section-title { font-size: 20px; color: #2c3e50; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-
-        /* Catalog Layout Grid System */
-        .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .book-card { background: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: transform 0.2s; }
-        .book-card:hover { transform: translateY(-3px); }
-        .book-card img { height: 150px; object-fit: cover; margin-bottom: 12px; border-radius: 6px; max-width: 100%; }
-        .book-card h4 { margin: 6px 0; color: #2c3e50; font-size: 16px; }
-        .book-card p { margin: 4px 0; font-size: 13px; color: #7f8c8d; }
-        
-        /* Functional Button Variations */
-        .btn-action { width: 100%; padding: 10px; border: none; border-radius: 6px; margin-top: 8px; cursor: pointer; font-weight: bold; color: white; transition: background 0.2s; font-size: 14px; }
-        .btn-take { background: #2ecc71; }
-        .btn-take:hover { background: #27ae60; }
-        .btn-remind { background: #e67e22; }
-        .btn-remind:hover { background: #d35400; }
-        .btn-update { background: #9b59b6; }
-        .btn-update:hover { background: #8e44ad; }
-
-        /* Realtime Helpbox Sidebar Styling */
-        .help-feed-container { background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 400px; overflow-y: auto; }
-        .help-msg { background: white; padding: 12px; margin-bottom: 10px; border-radius: 6px; border-left: 4px solid #2ecc71; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .help-msg small { color: #95a5a6; display: block; margin-bottom: 4px; }
-        .help-msg p { margin: 0; color: #34495e; font-size: 14px; }
-
-        /* Interactive Notice Modal System Overlay */
-        .notice-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-content: 999; backdrop-filter: blur(3px); }
-        .modal-content { background:white; padding:30px; border-radius:12px; text-align:center; max-width:400px; width:90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .modal-content label { display:block; text-align:left; margin-bottom:6px; font-weight: 500; color: #555; margin-top: 10px; }
-    </style>
-</head>
-<body>
-
-    <!-- Top Management Navbar Controls -->
-    <div class="navbar">
-        <h2>CUTM Student Digital Library</h2>
-        <div class="nav-actions">
-            <button class="nav-btn" onclick="showCatalogView()">Browse Catalog</button>
-            <button class="nav-btn" onclick="viewMyBooksPanel()">Manage Books</button>
-            <button class="nav-btn btn-notify" onclick="toggleNotificationWindow()">Notification 🔔</button>
-            <button class="nav-btn" onclick="toggleHelpModal()">Help 💬</button>
-            <a href="student-login.html" class="nav-btn btn-logout">Logout</a>
-        </div>
-    </div>
-
-    <!-- Search Filtering and Sorting Tools -->
-    <div class="search-container">
-        <input type="text" id="searchBar" class="search-box" onkeyup="renderCatalog()" placeholder="Search by book name or author title...">
-        <select id="sortOption" class="sort-select" onchange="renderCatalog()">
-            <option value="all">New Books (All)</option>
-            <option value="recent">Recent Viewed</option>
-        </select>
-    </div>
-
-    <!-- Center Interactive Workspace Grid Split -->
-    <div class="main-view">
-        <div class="card-box" id="studentCenterDisplay">
-            <h3 class="section-title" id="displayTitle">Available Books Catalog</h3>
-            <div class="book-grid" id="catalogBox"></div>
-        </div>
-        
-        <!-- Faculty Concerns Ticket Return Resolution Feed -->
-        <div class="card-box" style="background: #ffffff;">
-            <h3 class="section-title">Student Help Section</h3>
-            <div id="resolutionFeed" class="help-feed-container">Retrieving faculty advice signals...</div>
-        </div>
-    </div>
-
-    <!-- Dynamic Double-Date Agreement Tracking Notice Modal -->
-    <div class="notice-modal" id="issueModal">
-        <div class="modal-content">
-            <h3>Issue Notice Validation</h3>
-            <p id="modalBookName" style="font-weight: 600; color: #2c3e50;"></p>
-            
-            <label for="targetIssueDate">Taking Date</label>
-            <input type="date" id="targetIssueDate" class="search-box">
-            
-            <label for="targetReturnDate">Return Date</label>
-            <input type="date" id="targetReturnDate" class="search-box">
-            
-            <button class="btn-action btn-take" style="margin-top:20px;" onclick="confirmBookIssueAction()">OK</button>
-            <button class="btn-action" style="background:#7f8c8d;" onclick="closeModal()">Cancel</button>
-        </div>
-    </div>
-
-    <script>
-        // Realtime Datastores Cluster Configuration Matrix
-        const firebaseConfig = {
-            apiKey: "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
-            authDomain: "://firebaseapp.com",
-            projectId: "cutm-library",
-            storageBucket: "cutm-library.firebasestorage.app",
-            messagingSenderId: "719135627027",
-            appId: "1:719135627027:web:1b7c73157ea4675a816ce6",
-            databaseURL: "https://firebasedatabase.app"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        let catalog = [];
-        const studentId = localStorage.getItem("studentUser") || "STUDENT_TEST";
-        let activeSelectionBookId = "";
-        let currentIssuedList = [];
-        let dashboardViewMode = "catalog"; // Modes tracking: 'catalog' or 'mybooks'
-
-        // Realtime Data Ingestion Listeners
-        database.ref('library_books').on('value', (snap) => {
-            catalog = snap.exists() ? Object.values(snap.val()) : [];
-            if(dashboardViewMode === "catalog") renderCatalog();
-        });
-
-        database.ref('issued').on('value', (snap) => {
-            currentIssuedList = snap.exists() ? Object.values(snap.val()) : [];
-            if(dashboardViewMode === "mybooks") viewMyBooksPanel();
-        });
-
-        database.ref('student_help/' + studentId).on('value', (snap) => {
-            let display = document.getElementById('resolutionFeed');
-            if(!snap.exists()) { display.innerHTML = "<p style='color:#95a5a6; text-align:center;'>No message logs processed yet.</p>"; }
-            else {
-                let html = "";
-                snap.forEach(c => {
-                    html += `<div class="help-msg"><small>Resolved: ${c.val().date}</small><p>${c.val().reply}</p></div>`;
-                });
-                display.innerHTML = html;
-            }
-        });
-
-        function showCatalogView() {
-            dashboardViewMode = "catalog";
-            document.getElementById('displayTitle').innerText = "Available Books Catalog";
-            document.getElementById('studentCenterDisplay').innerHTML = `<h3 class="section-title" id="displayTitle">Available Books Catalog</h3><div class="book-grid" id="catalogBox"></div>`;
-            renderCatalog();
+        .navbar h2 {
+            margin: 0;
         }
 
-        function renderCatalog() {
-            let search = document.getElementById('searchBar').value.toLowerCase();
-            let sort = document.getElementById('sortOption').value;
-            let target = document.getElementById('catalogBox');
-            if(!target) return;
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
 
-            let filtered = catalog.filter(b => b.name.toLowerCase().includes(search) || b.author.toLowerCase().includes(search));
-            
-            // Apply sorting filters logic rules
-            if(sort === "recent") {
+        .nav-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-notify {
+            background: #f1c40f;
+            color: #2c3e50;
+        }
+
+        .btn-notify:hover {
+            background: #f39c12;
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+
+        /* SEARCH */
+        .search-container {
+            margin: 25px 0;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: #3498db;
+        }
+
+        .sort-select {
+            padding: 14px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* MAIN */
+        .main-view {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .card-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        /* BOOK GRID */
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .book-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: transform 0.2s;
+        }
+
+        .book-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .book-card img {
+            width: 120px;
+            height: 150px;
+            object-fit: cover;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            background: #eee;
+        }
+
+        .book-card h4 {
+            margin: 6px 0;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .book-card p {
+            margin: 5px 0;
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        /* BUTTONS */
+        .btn-action {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            margin-top: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+        }
+
+        .btn-take {
+            background: #2ecc71;
+        }
+
+        .btn-take:hover {
+            background: #27ae60;
+        }
+
+        .btn-remind {
+            background: #e67e22;
+        }
+
+        .btn-update {
+            background: #9b59b6;
+        }
+
+        .btn-return {
+            background: #3498db;
+        }
+
+        /* HELP */
+        .help-feed-container {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .help-msg {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #2ecc71;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .help-msg small {
+            color: #95a5a6;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .help-msg p {
+            margin: 0;
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        /* MODAL */
+        .notice-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .modal-content label {
+            display: block;
+            text-align: left;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        .modal-content input,
+        .modal-content textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* NOTIFICATION */
+        .notification-box {
+            background: #fff8dc;
+            border-left: 4px solid #f1c40f;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+
+        .notification-box p {
+            margin: 5px 0;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #95a5a6;
+            padding: 30px;
+        }
+
+        /* MOBILE */
+        @media (max-width: 900px) {
+
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .nav-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-view {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .search-box,
+            .sort-select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+
+        <h2>CUTM Student Digital Library</h2>
+
+        <div class="nav-actions">
+
+            <button class="nav-btn" onclick="showCatalogView()">
+                Browse Catalog
+            </button>
+
+            <button class="nav-btn" onclick="viewMyBooksPanel()">
+                Manage Books
+            </button>
+
+            <button class="nav-btn btn-notify" onclick="toggleNotificationWindow()">
+                Notification 🔔
+            </button>
+
+            <button class="nav-btn" onclick="toggleHelpModal()">
+                Help 💬
+            </button>
+
+            <a href="student-login.html" class="nav-btn btn-logout">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH -->
+    <div class="search-container">
+
+        <input
+            type="text"
+            id="searchBar"
+            class="search-box"
+            onkeyup="renderCatalog()"
+            placeholder="Search by book name or author..."
+        >
+
+        <select
+            id="sortOption"
+            class="sort-select"
+            onchange="renderCatalog()"
+        >
+
+            <option value="all">
+                New Books (All)
+            </option>
+
+            <option value="recent">
+                Recent Books
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- MAIN CONTENT -->
+    <div class="main-view">
+
+        <!-- BOOK CATALOG -->
+        <div class="card-box" id="studentCenterDisplay">
+
+            <h3 class="section-title" id="displayTitle">
+                Available Books Catalog
+            </h3>
+
+            <div
+                class="book-grid"
+                id="catalogBox"
+            >
+            </div>
+
+        </div>
+
+
+        <!-- HELP SECTION -->
+        <div class="card-box">
+
+            <h3 class="section-title">
+                Student Help Section
+            </h3>
+
+            <div
+                id="resolutionFeed"
+                class="help-feed-container"
+            >
+                Retrieving faculty advice signals...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ISSUE BOOK MODAL -->
+    <div
+        class="notice-modal"
+        id="issueModal"
+    >
+
+        <div class="modal-content">
+
+            <h3>
+                Issue Book
+            </h3>
+
+            <p
+                id="modalBookName"
+                style="font-weight:600;color:#2c3e50;"
+            ></p>
+
+            <label for="targetIssueDate">
+                Taking Date
+            </label>
+
+            <input
+                type="date"
+                id="targetIssueDate"
+            >
+
+            <label for="targetReturnDate">
+                Return Date
+            </label>
+
+            <input
+                type="date"
+                id="targetReturnDate"
+            >
+
+            <button
+                class="btn-action btn-take"
+                onclick="confirmBookIssueAction()"
+            >
+                Confirm Issue
+            </button>
+
+            <button
+                class="btn-action"
+                style="background:#7f8c8d;"
+                onclick="closeModal()"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- HELP MODAL -->
+    <div
+        class="notice-modal"
+        id="helpModal"
+    >
+
+        <div class="modal-content">
+
+            <h3>
+                Student Help
+            </h3>
+
+            <p>
+                Send your question or problem to the faculty.
+            </p>
+
+            <textarea
+                id="helpMessage"
+                rows="5"
+                placeholder="Write your message..."
+            ></textarea>
+
+            <button
+                class="btn-action btn-take"
+                onclick="sendHelpRequest()"
+            >
+                Send Request
+            </button>
+
+            <button
+                class="btn-action"
+                style="background:#7f8c8d;"
+                onclick="closeHelpModal()"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* =========================================
+           FIREBASE CONFIGURATION
+        ========================================= */
+
+        const firebaseConfig = {
+
+            apiKey:
+                "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
+
+            authDomain:
+                "cutm-library.firebaseapp.com",
+
+            projectId:
+                "cutm-library",
+
+            storageBucket:
+                "cutm-library.firebasestorage.app",
+
+            messagingSenderId:
+                "719135627027",
+
+            appId:
+                "1:719135627027:web:1b7c73157ea4675a816ce6",
+
+            databaseURL:
+                "https://cutm-library-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+
+        /* INITIALIZE FIREBASE */
+
+        firebase.initializeApp(firebaseConfig);
+
+        const database = firebase.database();
+
+
+        /* =========================================
+           STUDENT INFORMATION
+        ========================================= */
+
+        const studentId =
+            localStorage.getItem("studentRegNo") ||
+            localStorage.getItem("studentUser") ||
+            "STUDENT_TEST";
+
+
+        let catalog = [];
+
+        let currentIssuedList = [];
+
+        let dashboardViewMode = "catalog";
+
+        let activeSelectionBookId = "";
+
+
+        /* =========================================
+           LOAD BOOKS FROM FIREBASE
+        ========================================= */
+
+        database
+            .ref("library_books")
+            .on("value", function(snapshot) {
+
+                if (snapshot.exists()) {
+
+                    catalog = [];
+
+                    snapshot.forEach(function(child) {
+
+                        const book = child.val();
+
+                        /*
+                         * Keep Firebase key if book does not
+                         * contain an id field.
+                         */
+
+                        if (!book.id) {
+                            book.id = child.key;
+                        }
+
+                        catalog.push(book);
+
+                    });
+
+                } else {
+
+                    catalog = [];
+
+                }
+
+
+                if (dashboardViewMode === "catalog") {
+
+                    renderCatalog();
+
+                }
+
+            }, function(error) {
+
+                console.error(
+                    "Firebase book loading error:",
+                    error
+                );
+
+                document.getElementById("catalogBox").innerHTML =
+                    `
+                    <div class="empty-message">
+                        Unable to load books.
+                        <br>
+                        ${error.message}
+                    </div>
+                    `;
+
+            });
+
+
+        /* =========================================
+           LOAD ISSUED BOOKS
+        ========================================= */
+
+        database
+            .ref("issued")
+            .on("value", function(snapshot) {
+
+                currentIssuedList = [];
+
+                if (snapshot.exists()) {
+
+                    snapshot.forEach(function(child) {
+
+                        const item = child.val();
+
+                        if (!item.id) {
+                            item.id = child.key;
+                        }
+
+                        currentIssuedList.push(item);
+
+                    });
+
+                }
+
+
+                if (dashboardViewMode === "mybooks") {
+
+                    viewMyBooksPanel();
+
+                }
+
+            });
+
+
+        /* =========================================
+           LOAD FACULTY HELP REPLIES
+        ========================================= */
+
+        database
+            .ref("student_help/" + studentId)
+            .on("value", function(snapshot) {
+
+                const display =
+                    document.getElementById("resolutionFeed");
+
+
+                if (!snapshot.exists()) {
+
+                    display.innerHTML =
+                        `
+                        <p class="empty-message">
+                            No message logs processed yet.
+                        </p>
+                        `;
+
+                    return;
+                }
+
+
+                let html = "";
+
+
+                snapshot.forEach(function(child) {
+
+                    const data = child.val();
+
+                    html +=
+                        `
+                        <div class="help-msg">
+
+                            <small>
+                                Resolved:
+                                ${data.date || "N/A"}
+                            </small>
+
+                            <p>
+                                ${data.reply || data.message || ""}
+                            </p>
+
+                        </div>
+                        `;
+
+                });
+
+
+                display.innerHTML = html;
+
+            });
+
+
+        /* =========================================
+           DISPLAY CATALOG
+        ========================================= */
+
+        function showCatalogView() {
+
+            dashboardViewMode = "catalog";
+
+
+            document.getElementById(
+                "studentCenterDisplay"
+            ).innerHTML =
+                `
+                <h3
+                    class="section-title"
+                    id="displayTitle"
+                >
+                    Available Books Catalog
+                </h3>
+
+                <div
+                    class="book-grid"
+                    id="catalogBox"
+                ></div>
+                `;
+
+
+            renderCatalog();
+
+        }
+
+
+        /* =========================================
+           RENDER BOOKS
+        ========================================= */
+
+        function renderCatalog() {
+
+            const searchElement =
+                document.getElementById("searchBar");
+
+            const sortElement =
+                document.getElementById("sortOption");
+
+            const target =
+                document.getElementById("catalogBox");
+
+
+            if (!target) {
+                return;
+            }
+
+
+            const search =
+                searchElement
+                    ? searchElement.value
+                        .trim()
+                        .toLowerCase()
+                    : "";
+
+
+            const sort =
+                sortElement
+                    ? sortElement.value
+                    : "all";
+
+
+            let filtered =
+                catalog.filter(function(book) {
+
+                    const name =
+                        String(book.name || "")
+                            .toLowerCase();
+
+                    const author =
+                        String(book.author || "")
+                            .toLowerCase();
+
+                    return (
+                        name.includes(search) ||
+                        author.includes(search)
+                    );
+
+                });
+
+
+            /*
+             * Recent books
+             * Uses createdAt if available.
+             */
+
+            if (sort === "recent") {
+
+                filtered.sort(function(a, b) {
+
+                    return (
+                        Number(b.createdAt || 0) -
+                        Number(a.createdAt || 0)
+                    );
+
+                });
+
+            }
+
+
+            if (filtered.length === 0) {
+
+                target.innerHTML =
+                    `
+                    <div
+                        class="empty-message"
+                        style="grid-column:1/-1;"
+                    >
+                        ${
+                            catalog.length === 0
+                            ? "No books available in the library."
+                            : "No books found for your search."
+                        }
+                    </div>
+                    `;
+
+                return;
+
+            }
+
+
+            let html = "";
+
+
+            filtered.forEach(function(book) {
+
+                const id =
+                    book.id || "";
+
+
+                const name =
+                    book.name || "Unknown Book";
+
+
+                const author =
+                    book.author || "Unknown Author";
+
+
+                const rating =
+                    book.rating || "5.0";
+
+
+                const available =
+                    Number(book.available || 0);
+
+
+                const image =
+                    book.pic || "logo.jpg";
+
+
+                html +=
+                    `
+                    <div class="book-card">
+
+                        <img
+                            src="${escapeHtml(image)}"
+                            alt="${escapeHtml(name)}"
+                            onerror="this.onerror=null;this.src='logo.jpg';"
+                        >
+
+                        <h4>
+                            ${escapeHtml(name)}
+                        </h4>
+
+                        <p>
+                            Author:
+                            ${escapeHtml(author)}
+                        </p>
+
+                        <p>
+                            Rating:
+                            ⭐ ${rating}
+                        </p>
+
+                        <p>
+                            Available:
+                            <strong>${available}</strong>
+                        </p>
+
+                        ${
+                            available > 0
+
+                            ?
+
+                            `
+                            <button
+                                class="btn-action btn-take"
+                                onclick="openIssueModal('${escapeJs(id)}')"
+                            >
+                                Take Book
+                            </button>
+                            `
+
+                            :
+
+                            `
+                            <button
+                                class="btn-action"
+                                style="background:#95a5a6;"
+                                disabled
+                            >
+                                Not Available
+                            </button>
+                            `
+                        }
+
+                    </div>
+                    `;
+
+            });
+
+
+            target.innerHTML = html;
+
+        }
+
+
+        /* =========================================
+           ESCAPE HTML
+        ========================================= */
+
+        function escapeHtml(value) {
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        function escapeJs(value) {
+
+            return String(value)
+                .replace(/\\/g, "\\\\")
+                .replace(/'/g, "\\'");
+
+        }
+
+
+        /* =========================================
+           FIND BOOK
+        ========================================= */
+
+        function findBook(bookId) {
+
+            return catalog.find(function(book) {
+
+                return String(book.id) === String(bookId);
+
+            });
+
+        }
+
+
+        /* =========================================
+           OPEN ISSUE MODAL
+        ========================================= */
+
+        function openIssueModal(bookId) {
+
+            const book =
+                findBook(bookId);
+
+
+            if (!book) {
+
+                alert("Book not found.");
+
+                return;
+
+            }
+
+
+            if (Number(book.available || 0) <= 0) {
+
+                alert("This book is currently unavailable.");
+
+                return;
+
+            }
+
+
+            activeSelectionBookId =
+                bookId;
+
+
+            document.getElementById(
+                "modalBookName"
+            ).innerText =
+                book.name;
+
+
+            const today =
+                new Date()
+                    .toISOString()
+                    .split("T")[0];
+
+
+            document.getElementById(
+                "targetIssueDate"
+            ).value = today;
+
+
+            document.getElementById(
+                "targetIssueDate"
+            ).min = today;
+
+
+            document.getElementById(
+                "targetReturnDate"
+            ).value = "";
+
+
+            document.getElementById(
+                "targetReturnDate"
+            ).min = today;
+
+
+            document.getElementById(
+                "issueModal"
+            ).style.display = "flex";
+
+        }
+
+
+        /* =========================================
+           CLOSE ISSUE MODAL
+        ========================================= */
+
+        function closeModal() {
+
+            document.getElementById(
+                "issueModal"
+            ).style.display = "none";
+
+            activeSelectionBookId = "";
+
+        }
+
+
+        /* =========================================
+           CONFIRM BOOK ISSUE
+        ========================================= */
+
+        function confirmBookIssueAction() {
+
+            const issueDate =
+                document.getElementById(
+                    "targetIssueDate"
+                ).value;
+
+
+            const returnDate =
+                document.getElementById(
+                    "targetReturnDate"
+                ).value;
+
+
+            if (!issueDate || !returnDate) {
+
+                alert(
+                    "Please select both taking date and return date."
+                );
+
+                return;
+
+            }
+
+
+            if (returnDate < issueDate) {
+
+                alert(
+                    "Return date cannot be before taking date."
+                );
+
+                return;
+
+            }
+
+
+            const book =
+                findBook(activeSelectionBookId);
+
+
+            if (!book) {
+
+                alert("Book not found.");
+
+                return;
+
+            }
+
+
+            const available =
+                Number(book.available || 0);
+
+
+            if (available <= 0) {
+
+                alert(
+                    "This book is no longer available."
+                );
+
+                closeModal();
+
+                return;
+
+            }
+
+
+            const issuedId =
+                "issue_" + Date.now();
+
+
+            const issuedData = {
+
+                id: issuedId,
+
+                bookId:
+                    activeSelectionBookId,
+
+                name:
+                    book.name || "",
+
+                author:
+                    book.author || "",
+
+                pic:
+                    book.pic || "logo.jpg",
+
+                studentId:
+                    studentId,
+
+                issueDate:
+                    issueDate,
+
+                returnDate:
+                    returnDate,
+
+                returned:
+                    false,
+
+                createdAt:
+                    Date.now()
+
+            };
+
+
+            /*
+             * First save the issued record.
+             */
+
+            database
+                .ref("issued/" + issuedId)
+                .set(issuedData)
+
+                .then(function() {
+
+                    /*
+                     * Reduce available quantity.
+                     */
+
+                    return database
+                        .ref(
+                            "library_books/" +
+                            activeSelectionBookId +
+                            "/available"
+                        )
+                        .set(available - 1);
+
+                })
+
+                .then(function() {
+
+                    alert(
+                        "Book issued successfully!"
+                    );
+
+                    closeModal();
+
+                    renderCatalog();
+
+                })
+
+                .catch(function(error) {
+
+                    alert(
+                        "Unable to issue book: " +
+                        error.message
+                    );
+
+                });
+
+        }
+
+
+        /* =========================================
+           MY BOOKS
+        ========================================= */
+
+        function viewMyBooksPanel() {
+
+            dashboardViewMode = "mybooks";
+
+
+            const display =
+                document.getElementById(
+                    "studentCenterDisplay"
+                );
+
+
+            const myBooks =
+                currentIssuedList.filter(function(item) {
+
+                    return (
+                        String(item.studentId) ===
+                        String(studentId)
+                    );
+
+                });
+
+
+            let html =
+                `
+                <h3 class="section-title">
+                    My Issued Books
+                </h3>
+
+                <div class="book-grid">
+                `;
+
+
+            if (myBooks.length === 0) {
+
+                html +=
+                    `
+                    <div
+                        class="empty-message"
+                        style="grid-column:1/-1;"
+                    >
+                        You have not issued any books.
+                    </div>
+                    `;
+
+            } else {
+
+                myBooks.forEach(function(book) {
+
+                    html +=
+                        `
+                        <div class="book-card">
+
+                            <img
+                                src="${escapeHtml(book.pic || "logo.jpg")}"
+                                alt="Book"
+                                onerror="this.onerror=null;this.src='logo.jpg';"
+                            >
+
+                            <h4>
+                                ${escapeHtml(book.name || "Unknown Book")}
+                            </h4>
+
+                            <p>
+                                Author:
+                                ${escapeHtml(book.author || "Unknown")}
+                            </p>
+
+                            <p>
+                                Issue Date:
+                                ${escapeHtml(book.issueDate || "N/A")}
+                            </p>
+
+                            <p>
+                                Return Date:
+                                ${escapeHtml(book.returnDate || "N/A")}
+                            </p>
+
+                            ${
+                                book.returned
+
+                                ?
+
+                                `
+                                <p style="color:#2ecc71;font-weight:bold;">
+                                    Returned
+                                </p>
+                                `
+
+                                :
+
+                                `
+                                <button
+                                    class="btn-action btn-return"
+                                    onclick="returnBook('${escapeJs(book.id)}')"
+                                >
+                                    Return Book
+                                </button>
+                                `
+                            }
+
+                        </div>
+                        `;
+
+                });
+
+            }
+
+
+            html +=
+                `
+                </div>
+                `;
+
+
+            display.innerHTML =
+                html;
+
+        }
+
+
+        /* =========================================
+           RETURN BOOK
+        ========================================= */
+
+        function returnBook(issueId) {
+
+            const issue =
+                currentIssuedList.find(function(item) {
+
+                    return String(item.id) ===
+                        String(issueId);
+
+                });
+
+
+            if (!issue) {
+
+                alert("Issued book record not found.");
+
+                return;
+
+            }
+
+
+            if (issue.returned) {
+
+                alert("This book has already been returned.");
+
+                return;
+
+            }
+
+
+            if (
+                !confirm(
+                    "Are you sure you want to return this book?"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            database
+                .ref("issued/" + issueId + "/returned")
+                .set(true)
+
+                .then(function() {
+
+                    return database
+                        .ref(
+                            "library_books/" +
+                            issue.bookId +
+                            "/available"
+                        )
+                        .once("value");
+
+                })
+
+                .then(function(snapshot) {
+
+                    const oldQty =
+                        Number(snapshot.val() || 0);
+
+
+                    return database
+                        .ref(
+                            "library_books/" +
+                            issue.bookId +
+                            "/available"
+                        )
+                        .set(oldQty + 1);
+
+                })
+
+                .then(function() {
+
+                    alert(
+                        "Book returned successfully!"
+                    );
+
+                    viewMyBooksPanel();
+
+                })
+
+                .catch(function(error) {
+
+                    alert(
+                        "Return failed: " +
+                        error.message
+                    );
+
+                });
+
+        }
+
+
+        /* =========================================
+           NOTIFICATIONS
+        ========================================= */
+
+        function toggleNotificationWindow() {
+
+            dashboardViewMode = "notifications";
+
+
+            const display =
+                document.getElementById(
+                    "studentCenterDisplay"
+                );
+
+
+            database
+                .ref(
+                    "notifications/" +
+                    studentId
+                )
+                .once("value")
+                .then(function(snapshot) {
+
+                    let html =
+                        `
+                        <h3 class="section-title">
+                            Notifications 🔔
+                        </h3>
+                        `;
+
+
+                    if (!snapshot.exists()) {
+
+                        html +=
+                            `
+                            <div class="empty-message">
+                                No notifications.
+                            </div>
+                            `;
+
+                    } else {
+
+                        snapshot.forEach(function(child) {
+
+                            const data =
+                                child.val();
+
+
+                            html +=
+                                `
+                                <div class="notification-box">
+
+                                    <strong>
+                                        Library Notification
+                                    </strong>
+
+                                    <p>
+                                        ${escapeHtml(
+                                            data.message ||
+                                            ""
+                                        )}
+                                    </p>
+
+                                    <small>
+                                        ${escapeHtml(
+                                            data.date ||
+                                            ""
+                                        )}
+                                    </small>
+
+                                </div>
+                                `;
+
+                        });
+
+                    }
+
+
+                    display.innerHTML =
+                        html;
+
+                });
+
+        }
+
+
+        /* =========================================
+           HELP MODAL
+        ========================================= */
+
+        function toggleHelpModal() {
+
+            document.getElementById(
+                "helpModal"
+            ).style.display = "flex";
+
+        }
+
+
+        function closeHelpModal() {
+
+            document.getElementById(
+                "helpModal"
+            ).style.display = "none";
+
+        }
+
+
+        /* =========================================
+           SEND HELP REQUEST
+        ========================================= */
+
+        function sendHelpRequest() {
+
+            const message =
+                document.getElementById(
+                    "helpMessage"
+                ).value.trim();
+
+
+            if (!message) {
+
+                alert(
+                    "Please write your question or problem."
+                );
+
+                return;
+
+            }
+
+
+            const requestId =
+                "help_" + Date.now();
+
+
+            database
+                .ref(
+                    "helpbox/" +
+                    requestId
+                )
+                .set({
+
+                    studentId:
+                        studentId,
+
+                    message:
+                        message,
+
+                    answered:
+                        false,
+
+                    date:
+                        new Date()
+                            .toLocaleDateString(),
+
+                    createdAt:
+                        Date.now()
+
+                })
+
+                .then(function() {
+
+                    alert(
+                        "Your help request has been sent to faculty."
+                    );
+
+
+                    document.getElementById(
+                        "helpMessage"
+                    ).value = "";
+
+
+                    closeHelpModal();
+
+                })
+
+                .catch(function(error) {
+
+                    alert(
+                        "Unable to send request: " +
+                        error.message
+                    );
+
+                });
+
+        }
+
+
+        /* =========================================
+           DEFAULT LOAD
+        ========================================= */
+
+        window.addEventListener(
+            "load",
+            function() {
+
+                renderCatalog();
+
+            }
+        );
+
+
+        /* =========================================
+           LOGOUT
+        ========================================= */
+
+        function logoutStudent() {
+
+            localStorage.removeItem(
+                "studentRegNo"
+            );
+
+            localStorage.removeItem(
+                "studentUser"
+            );
+
+            window.location.href =
+                "student-login.html";
+
+        }
+
+    </script>
+
+</body>
+</html>
