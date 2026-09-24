@@ -1,152 +1,509 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Student Login - CUTM Library</title>
+
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+
     <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Added solid background fallback color if the picture path fails */
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('library-bg.jpg') #2d3436 no-repeat center center fixed;
+
+            background:
+                linear-gradient(
+                    rgba(0, 0, 0, 0.6),
+                    rgba(0, 0, 0, 0.6)
+                ),
+                url('library-bg.png');
+
+            background-color: #2d3436;
+
+            background-repeat: no-repeat;
+            background-position: center center;
             background-size: cover;
+            background-attachment: fixed;
+
             height: 100vh;
             margin: 0;
+
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
+
         .login-card {
             background-color: rgba(255, 255, 255, 0.95);
+
             padding: 40px;
+
             border-radius: 16px;
-            box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+
+            box-shadow:
+                0 12px 36px rgba(0, 0, 0, 0.4);
+
             width: 100%;
             max-width: 380px;
+
             text-align: center;
+
             backdrop-filter: blur(8px);
         }
 
+
         .login-card img {
             height: 65px;
+            width: auto;
+
             margin-bottom: 15px;
         }
 
+
         h2 {
             color: #2d3436;
+
+            margin-top: 0;
             margin-bottom: 25px;
+
             font-size: 24px;
+
             font-weight: 600;
         }
 
+
         .input-group {
             text-align: left;
+
             margin-bottom: 20px;
         }
 
+
         .input-group label {
             display: block;
+
             font-size: 14px;
+
             color: #555;
+
             margin-bottom: 6px;
+
             font-weight: 500;
         }
 
+
         .input-group input {
             width: 100%;
+
             padding: 12px;
+
             border: 2px solid #ddd;
+
             border-radius: 8px;
+
             font-size: 15px;
-            box-sizing: border-box;
+
+            outline: none;
+
             transition: all 0.3s ease;
         }
 
+
         .input-group input:focus {
             border-color: #0984e3;
-            outline: none;
-            box-shadow: 0 0 8px rgba(9, 132, 227, 0.2);
+
+            box-shadow:
+                0 0 8px rgba(9, 132, 227, 0.2);
         }
+
 
         .login-btn {
             width: 100%;
+
             padding: 14px;
+
             background-color: #0984e3;
+
             color: white;
+
             border: none;
+
             border-radius: 8px;
+
             font-size: 16px;
+
             font-weight: bold;
+
             cursor: pointer;
+
             transition: background 0.3s ease;
+
             margin-top: 10px;
         }
+
 
         .login-btn:hover {
             background-color: #00cec9;
         }
 
+
+        .login-btn:disabled {
+            background-color: #95a5a6;
+
+            cursor: not-allowed;
+        }
+
+
         .links-container {
             margin-top: 20px;
+
             display: flex;
+
             flex-direction: column;
+
             gap: 10px;
         }
 
+
         .signup-text {
             font-size: 14px;
+
             color: #555;
+
+            margin: 0;
         }
+
 
         .signup-text a {
             color: #0984e3;
+
             text-decoration: none;
+
             font-weight: 600;
         }
+
 
         .signup-text a:hover {
             text-decoration: underline;
         }
 
+
         .back-link {
             color: #74b9ff;
+
             text-decoration: none;
+
             font-size: 14px;
+
             transition: color 0.3s;
         }
+
 
         .back-link:hover {
             color: #0984e3;
         }
+
     </style>
+
 </head>
+
+
 <body>
 
+
     <div class="login-card">
-        <img src="logo.jpg" alt="CUTM Logo">
+
+        <img
+            src="logo.jpg"
+            alt="CUTM Logo"
+        >
+
+
         <h2>Student Portal Login</h2>
-        
-        <form action="http://127.0.0" method="POST">
-            <div class="input-group">
-                <label for="reg-no">Registration Number</label>
-                <input type="text" id="reg-no" name="username" placeholder="e.g., 2203011200XX" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-            </div>
-            
-            <button type="submit" class="login-btn">Secure Login</button>
-        </form>
+
+
+        <!-- Registration Number -->
+        <div class="input-group">
+
+            <label for="reg-no">
+                Registration Number
+            </label>
+
+            <input
+                type="text"
+                id="reg-no"
+                placeholder="Enter registration number"
+                autocomplete="username"
+            >
+
+        </div>
+
+
+        <!-- Password -->
+        <div class="input-group">
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+            >
+
+        </div>
+
+
+        <!-- Login Button -->
+        <button
+            type="button"
+            id="loginButton"
+            onclick="handleLogin()"
+            class="login-btn"
+        >
+            Secure Login
+        </button>
+
 
         <div class="links-container">
-            <!-- New Account Option Line -->
-            <p class="signup-text">New user? <a href="register.html">Create an Account</a></p>
-            <a href="index.html" class="back-link">← Back to Main Menu</a>
+
+            <!-- Create Account -->
+            <p class="signup-text">
+
+                New user?
+
+                <a href="student-register.html">
+                    Create an Account
+                </a>
+
+            </p>
+
+
+            <!-- Main Menu -->
+            <a
+                href="index.html"
+                class="back-link"
+            >
+                ← Back to Main Menu
+            </a>
+
         </div>
+
     </div>
 
+
+
+    <script>
+
+        // ==========================================
+        // FIREBASE CONFIGURATION
+        // ==========================================
+
+        const firebaseConfig = {
+
+            apiKey:
+                "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
+
+            authDomain:
+                "cutm-library.firebaseapp.com",
+
+            projectId:
+                "cutm-library",
+
+            storageBucket:
+                "cutm-library.firebasestorage.app",
+
+            messagingSenderId:
+                "719135627027",
+
+            appId:
+                "1:719135627027:web:1b7c73157ea4675a816ce6",
+
+            databaseURL:
+                "https://cutm-library-default-rtdb.asia-southeast1.firebasedatabase.app"
+
+        };
+
+
+        // ==========================================
+        // INITIALIZE FIREBASE
+        // ==========================================
+
+        firebase.initializeApp(firebaseConfig);
+
+        const database = firebase.database();
+
+
+
+        // ==========================================
+        // STUDENT LOGIN
+        // ==========================================
+
+        function handleLogin() {
+
+            const username =
+                document.getElementById("reg-no")
+                .value
+                .trim();
+
+            const password =
+                document.getElementById("password")
+                .value
+                .trim();
+
+            const loginButton =
+                document.getElementById("loginButton");
+
+
+            // ------------------------------------------
+            // CHECK EMPTY FIELDS
+            // ------------------------------------------
+
+            if (username === "" || password === "") {
+
+                alert(
+                    "Please complete all input fields."
+                );
+
+                return;
+            }
+
+
+            // ------------------------------------------
+            // DISABLE BUTTON
+            // ------------------------------------------
+
+            loginButton.disabled = true;
+
+            loginButton.innerText =
+                "Checking...";
+
+
+            // ------------------------------------------
+            // FIND STUDENT ACCOUNT
+            // ------------------------------------------
+
+            database
+                .ref("users/" + username)
+                .once("value")
+
+                .then(function(snapshot) {
+
+                    // ------------------------------------------
+                    // ACCOUNT FOUND
+                    // ------------------------------------------
+
+                    if (snapshot.exists()) {
+
+                        const studentData =
+                            snapshot.val();
+
+
+                        // ------------------------------------------
+                        // CHECK PASSWORD
+                        // ------------------------------------------
+
+                        if (
+                            studentData.password === password
+                        ) {
+
+                            alert(
+                                "Login successful!"
+                            );
+
+
+                            // Save registration number
+                            localStorage.setItem(
+                                "studentRegNo",
+                                username
+                            );
+
+
+                            // Open student dashboard
+                            window.location.href =
+                                "student-dashboard.html";
+
+                        }
+
+                        else {
+
+                            alert(
+                                "Incorrect password. " +
+                                "Please try again."
+                            );
+
+                            loginButton.disabled = false;
+
+                            loginButton.innerText =
+                                "Secure Login";
+                        }
+
+                    }
+
+                    // ------------------------------------------
+                    // ACCOUNT NOT FOUND
+                    // ------------------------------------------
+
+                    else {
+
+                        alert(
+                            "No student account found " +
+                            "with this Registration Number."
+                        );
+
+                        loginButton.disabled = false;
+
+                        loginButton.innerText =
+                            "Secure Login";
+                    }
+
+                })
+
+
+                // ------------------------------------------
+                // DATABASE ERROR
+                // ------------------------------------------
+
+                .catch(function(error) {
+
+                    console.error(
+                        "Firebase Error:",
+                        error
+                    );
+
+                    alert(
+                        "Database connection error:\n\n" +
+                        error.message
+                    );
+
+                    loginButton.disabled = false;
+
+                    loginButton.innerText =
+                        "Secure Login";
+
+                });
+
+        }
+
+    </script>
+
+
 </body>
+
 </html>
