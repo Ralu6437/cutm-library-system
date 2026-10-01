@@ -106,7 +106,7 @@
 const firebaseConfig={apiKey:"AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",authDomain:"cutm-library.firebaseapp.com",projectId:"cutm-library",storageBucket:"cutm-library.firebasestorage.app",messagingSenderId:"719135627027",appId:"1:719135627027:web:1b7c73157ea4675a816ce6",databaseURL:"https://cutm-library-default-rtdb.asia-southeast1.firebasedatabase.app"};
 firebase.initializeApp(firebaseConfig); const db=firebase.database();
 let books=[],students=[],issued=[],fines=[],helpbox=[],requests=[],notifications=[],announcements=[],editingBookId=null,editingStudentId=null,requestsLoaded=false,issuedLoaded=false;
-let facultyAccount=localStorage.getItem("facultyUser")||"faculty";
+let facultyAccount=localStorage.getItem("facultyPhone")||localStorage.getItem("facultyUser")||"faculty";
 let facultyId=localStorage.getItem("facultyId")||facultyAccount;
 let facultyName=localStorage.getItem("facultyName")||localStorage.getItem("facultyUserName")||"Faculty";
 let facultyPhone=localStorage.getItem("facultyPhone")||"";
