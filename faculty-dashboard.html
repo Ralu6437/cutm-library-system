@@ -106,7 +106,8 @@
 const firebaseConfig={apiKey:"AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",authDomain:"cutm-library.firebaseapp.com",projectId:"cutm-library",storageBucket:"cutm-library.firebasestorage.app",messagingSenderId:"719135627027",appId:"1:719135627027:web:1b7c73157ea4675a816ce6",databaseURL:"https://cutm-library-default-rtdb.asia-southeast1.firebasedatabase.app"};
 firebase.initializeApp(firebaseConfig); const db=firebase.database();
 let books=[],students=[],issued=[],fines=[],helpbox=[],requests=[],notifications=[],announcements=[],editingBookId=null,editingStudentId=null,requestsLoaded=false,issuedLoaded=false;
-let facultyId=localStorage.getItem("facultyId")||localStorage.getItem("facultyUser")||"faculty";
+let facultyAccount=localStorage.getItem("facultyUser")||"faculty";
+let facultyId=localStorage.getItem("facultyId")||facultyAccount;
 let facultyName=localStorage.getItem("facultyName")||localStorage.getItem("facultyUserName")||"Faculty";
 let facultyPhone=localStorage.getItem("facultyPhone")||"";
 let facultyEmail=localStorage.getItem("facultyEmail")||"";
@@ -138,7 +139,7 @@ function renderProfile(){
 }
 function loadFacultyProfile(){
   const fallback={name:facultyName,id:facultyId,phone:facultyPhone,email:facultyEmail};
-  db.ref("faculty_profiles/"+facultyId).once("value").then(s=>{
+  db.ref("faculty_profiles/"+facultyAccount).once("value").then(s=>{
     const p=s.val();
     if(p){facultyName=p.name||facultyName;facultyId=p.facultyId||facultyId;facultyPhone=p.phone||"";facultyEmail=p.email||"";localStorage.setItem("facultyName",facultyName);localStorage.setItem("facultyId",facultyId);localStorage.setItem("facultyPhone",facultyPhone);localStorage.setItem("facultyEmail",facultyEmail);document.getElementById("facultyName").textContent=facultyName;document.getElementById("avatar").textContent=(facultyName[0]||"F").toUpperCase();}
     renderProfile();
@@ -149,7 +150,7 @@ function saveFacultyProfile(){
   if(!name||!id||!phone||!email)return alert("Faculty name, faculty ID, phone number and email are required.");
   const oldId=facultyId;
   const data={name,facultyId:id,phone,email,updatedAt:Date.now()};
-  db.ref("faculty_profiles/"+id).set(data).then(()=>{
+  db.ref("faculty_profiles/"+facultyAccount).set(data).then(()=>{
     facultyName=name;facultyId=id;facultyPhone=phone;facultyEmail=email;
     localStorage.setItem("facultyName",name);localStorage.setItem("facultyId",id);localStorage.setItem("facultyPhone",phone);localStorage.setItem("facultyEmail",email);
     document.getElementById("facultyName").textContent=name;document.getElementById("avatar").textContent=(name[0]||"F").toUpperCase();
