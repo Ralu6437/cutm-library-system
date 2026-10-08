@@ -309,7 +309,7 @@
 
 
 
-   <script>
+<script>
 
 const firebaseConfig = {
     apiKey: "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
@@ -323,50 +323,104 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-const studentData = snapshot.val();
+const database = firebase.database();
 
-console.log("LOGIN DATA:", studentData);
-console.log("BLOCKED VALUE:", studentData.blocked);
-console.log("BLOCKED TYPE:", typeof studentData.blocked);
 
-if (studentData.password !== password) {
-    alert("Incorrect password. Please try again.");
-    loginButton.disabled = false;
-    loginButton.innerText = "Secure Login";
-    return;
-}
+function handleLogin() {
 
-if (studentData.blocked === true) {
-    alert("Your account is blocked by the administration.");
-    loginButton.disabled = false;
-    loginButton.innerText = "Secure Login";
-    return;
-}
+    const username = document.getElementById("reg-no").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const loginButton = document.getElementById("loginButton");
 
-alert("Login successful!");
-            localStorage.setItem("studentRegNo", username);
 
-            window.location.href = "student-dashboard.html";
+    // Empty fields
+    if (username === "" || password === "") {
+        alert("Please complete all input fields.");
+        return;
+    }
 
-        })
 
-        .catch(function(error) {
+    // Disable button
+    loginButton.disabled = true;
+    loginButton.innerText = "Checking...";
 
-            console.error("Firebase Error:", error);
 
-            alert(
-                "Database connection error:\n\n" +
-                error.message
-            );
+    // Get student account
+    database.ref("users/" + username).once("value")
+
+    .then(function(snapshot) {
+
+        // Account not found
+        if (!snapshot.exists()) {
+
+            alert("No student account found with this Registration Number.");
 
             loginButton.disabled = false;
             loginButton.innerText = "Secure Login";
 
-        });
+            return;
+        }
+
+
+        // Get student data
+        const studentData = snapshot.val();
+
+
+        console.log("LOGIN DATA:", studentData);
+        console.log("BLOCKED VALUE:", studentData.blocked);
+        console.log("BLOCKED TYPE:", typeof studentData.blocked);
+
+
+        // Password check
+        if (studentData.password !== password) {
+
+            alert("Incorrect password. Please try again.");
+
+            loginButton.disabled = false;
+            loginButton.innerText = "Secure Login";
+
+            return;
+        }
+
+
+        // BLOCK CHECK
+        if (studentData.blocked === true) {
+
+            alert("Your account is blocked by the administration.");
+
+            loginButton.disabled = false;
+            loginButton.innerText = "Secure Login";
+
+            return;
+        }
+
+
+        // Login successful
+        alert("Login successful!");
+
+        localStorage.setItem("studentRegNo", username);
+
+        window.location.href = "student-dashboard.html";
+
+    })
+
+    .catch(function(error) {
+
+        console.error("Firebase Error:", error);
+
+        alert(
+            "Database connection error:\n\n" +
+            error.message
+        );
+
+        loginButton.disabled = false;
+        loginButton.innerText = "Secure Login";
+
+    });
+
 }
 
 </script>
-
 
 </body>
 
