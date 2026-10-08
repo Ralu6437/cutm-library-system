@@ -419,27 +419,7 @@
                         // CHECK PASSWORD
                         // ------------------------------------------
 
-                        if (
-                            studentData.password === password
-                        ) {
-
-                            alert(
-                                "Login successful!"
-                            );
-
-
-                            // Save registration number
-                            localStorage.setItem(
-                                "studentRegNo",
-                                username
-                            );
-
-
-                            // Open student dashboard
-                            window.location.href =
-                                "student-dashboard.html";
-
-                        }
+                       if(studentData.password===password){if(studentData.blocked===true){alert("Your account is blocked by the administration.");loginButton.disabled=false;loginButton.innerText="Secure Login";return;}alert("Login successful!");localStorage.setItem("studentRegNo",username);window.location.href="student-dashboard.html";}
 
                         else {
 
