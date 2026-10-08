@@ -323,68 +323,27 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-const database = firebase.database();
+const studentData = snapshot.val();
 
+console.log("LOGIN DATA:", studentData);
+console.log("BLOCKED VALUE:", studentData.blocked);
+console.log("BLOCKED TYPE:", typeof studentData.blocked);
 
-function handleLogin() {
+if (studentData.password !== password) {
+    alert("Incorrect password. Please try again.");
+    loginButton.disabled = false;
+    loginButton.innerText = "Secure Login";
+    return;
+}
 
-    const username = document.getElementById("reg-no").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const loginButton = document.getElementById("loginButton");
+if (studentData.blocked === true) {
+    alert("Your account is blocked by the administration.");
+    loginButton.disabled = false;
+    loginButton.innerText = "Secure Login";
+    return;
+}
 
-    if (username === "" || password === "") {
-        alert("Please complete all input fields.");
-        return;
-    }
-
-    loginButton.disabled = true;
-    loginButton.innerText = "Checking...";
-
-    database.ref("users/" + username).once("value")
-
-        .then(function(snapshot) {
-
-            // Account does not exist
-            if (!snapshot.exists()) {
-
-                alert("No student account found with this Registration Number.");
-
-                loginButton.disabled = false;
-                loginButton.innerText = "Secure Login";
-
-                return;
-            }
-
-            const studentData = snapshot.val();
-
-
-            // Password check
-            if (studentData.password !== password) {
-
-                alert("Incorrect password. Please try again.");
-
-                loginButton.disabled = false;
-                loginButton.innerText = "Secure Login";
-
-                return;
-            }
-
-
-            // Blocked student check
-            if (studentData.blocked === true) {
-
-                alert("Your account is blocked by the administration.");
-
-                loginButton.disabled = false;
-                loginButton.innerText = "Secure Login";
-
-                return;
-            }
-
-
-            // Login successful
-            alert("Login successful!");
-
+alert("Login successful!");
             localStorage.setItem("studentRegNo", username);
 
             window.location.href = "student-dashboard.html";
