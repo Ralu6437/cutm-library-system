@@ -94,7 +94,7 @@ listen("fines",s=>{myFines=[];s.forEach(c=>{let v=c.val()||{};if(String(v.studen
 listen("book_requests",s=>{requests=[];s.forEach(c=>{let v=c.val()||{};if(String(v.studentId)===String(studentId))requests.push({...v,_key:c.key})});renderRequests()});
 listen("notifications/"+studentId,s=>{notifications=[];s.forEach(c=>notifications.push({...c.val(),_key:c.key}));renderNotifications();document.getElementById("notifCount").textContent=notifications.filter(n=>!n.read).length});
 listen("announcements",s=>{announcements=[];s.forEach(c=>announcements.push({...c.val(),_key:c.key}));renderDashboard();renderNotifications()});
-listen("resources/"+studentId,s=>{resources=[];s.forEach(c=>resources.push({...c.val(),_key:c.key}));renderResources()});
+listen("resources/"+studentId,snapshot=>{resources=[];snapshot.forEach(child=>{const data=child.val();resources.push({...data,_key:child.key});});console.log("Total resources:",resources.length);console.log("Resources:",resources);renderResources();});
 listen("students",s=>{let found=null;s.forEach(c=>{const v=c.val()||{};if(String(v.registrationNumber||c.key)===String(studentId))found={...v,_key:c.key,id:c.key}});studentData=found||{registrationNumber:studentId};updateStudentHeader();renderProfile()});
 function updateStudentHeader(){const name=studentData.name||studentId||"Student";document.getElementById("studentNameTop").textContent=name;document.getElementById("avatar").textContent=(name[0]||"S").toUpperCase();document.getElementById("profileAvatar").textContent=(name[0]||"S").toUpperCase()}
 function isMyIssue(x){return String(x.studentId)===String(studentId)}
