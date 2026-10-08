@@ -309,193 +309,104 @@
 
 
 
-    <script>
+   <script>
 
-        // ==========================================
-        // FIREBASE CONFIGURATION
-        // ==========================================
+const firebaseConfig = {
+    apiKey: "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
+    authDomain: "cutm-library.firebaseapp.com",
+    projectId: "cutm-library",
+    storageBucket: "cutm-library.firebasestorage.app",
+    messagingSenderId: "719135627027",
+    appId: "1:719135627027:web:1b7c73157ea4675a816ce6",
+    databaseURL: "https://cutm-library-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
 
-        const firebaseConfig = {
+firebase.initializeApp(firebaseConfig);
 
-            apiKey:
-                "AIzaSyBY9y1SL9PTKveU7hg3QQYGTJXc0fjNoHU",
-
-            authDomain:
-                "cutm-library.firebaseapp.com",
-
-            projectId:
-                "cutm-library",
-
-            storageBucket:
-                "cutm-library.firebasestorage.app",
-
-            messagingSenderId:
-                "719135627027",
-
-            appId:
-                "1:719135627027:web:1b7c73157ea4675a816ce6",
-
-            databaseURL:
-                "https://cutm-library-default-rtdb.asia-southeast1.firebasedatabase.app"
-
-        };
+const database = firebase.database();
 
 
-        // ==========================================
-        // INITIALIZE FIREBASE
-        // ==========================================
+function handleLogin() {
 
-        firebase.initializeApp(firebaseConfig);
+    const username = document.getElementById("reg-no").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const loginButton = document.getElementById("loginButton");
 
-        const database = firebase.database();
+    if (username === "" || password === "") {
+        alert("Please complete all input fields.");
+        return;
+    }
+
+    loginButton.disabled = true;
+    loginButton.innerText = "Checking...";
+
+    database.ref("users/" + username).once("value")
+
+        .then(function(snapshot) {
+
+            // Account does not exist
+            if (!snapshot.exists()) {
+
+                alert("No student account found with this Registration Number.");
+
+                loginButton.disabled = false;
+                loginButton.innerText = "Secure Login";
+
+                return;
+            }
+
+            const studentData = snapshot.val();
 
 
+            // Password check
+            if (studentData.password !== password) {
 
-        // ==========================================
-        // STUDENT LOGIN
-        // ==========================================
+                alert("Incorrect password. Please try again.");
 
-        function handleLogin() {
-
-            const username =
-                document.getElementById("reg-no")
-                .value
-                .trim();
-
-            const password =
-                document.getElementById("password")
-                .value
-                .trim();
-
-            const loginButton =
-                document.getElementById("loginButton");
-
-
-            // ------------------------------------------
-            // CHECK EMPTY FIELDS
-            // ------------------------------------------
-
-            if (username === "" || password === "") {
-
-                alert(
-                    "Please complete all input fields."
-                );
+                loginButton.disabled = false;
+                loginButton.innerText = "Secure Login";
 
                 return;
             }
 
 
-            // ------------------------------------------
-            // DISABLE BUTTON
-            // ------------------------------------------
+            // Blocked student check
+            if (studentData.blocked === true) {
 
-            loginButton.disabled = true;
+                alert("Your account is blocked by the administration.");
 
-            loginButton.innerText =
-                "Checking...";
+                loginButton.disabled = false;
+                loginButton.innerText = "Secure Login";
+
+                return;
+            }
 
 
-            // ------------------------------------------
-            // FIND STUDENT ACCOUNT
-            // ------------------------------------------
+            // Login successful
+            alert("Login successful!");
 
-            database
-                .ref("users/" + username)
-                .once("value")
+            localStorage.setItem("studentRegNo", username);
 
-                .then(function(snapshot) {
+            window.location.href = "student-dashboard.html";
 
-                    // ------------------------------------------
-                    // ACCOUNT FOUND
-                    // ------------------------------------------
+        })
 
-                    if (snapshot.exists()) {
+        .catch(function(error) {
 
-                      
+            console.error("Firebase Error:", error);
 
-                     const studentData = snapshot.val();
+            alert(
+                "Database connection error:\n\n" +
+                error.message
+            );
 
-if (!studentData) {
-    alert("Invalid registration number or password.");
-    return;
+            loginButton.disabled = false;
+            loginButton.innerText = "Secure Login";
+
+        });
 }
 
-if (studentData.password !== password) {
-    alert("Invalid registration number or password.");
-    return;
-}
-
-// BLOCK CHECK MUST COME BEFORE LOGIN SUCCESS
-if (studentData.blocked === true) {
-    alert("Your account is blocked by the administration.");
-    return;
-}
-
-// Only active students reach here
-alert("Login successful!");
-                        localStorage.setItem("studentRegNo",username);window.location.href="student-dashboard.html";}
-
-                        else {
-
-                            alert(
-                                "Incorrect password. " +
-                                "Please try again."
-                            );
-
-                            loginButton.disabled = false;
-
-                            loginButton.innerText =
-                                "Secure Login";
-                        }
-
-                    }
-
-                    // ------------------------------------------
-                    // ACCOUNT NOT FOUND
-                    // ------------------------------------------
-
-                    else {
-
-                        alert(
-                            "No student account found " +
-                            "with this Registration Number."
-                        );
-
-                        loginButton.disabled = false;
-
-                        loginButton.innerText =
-                            "Secure Login";
-                    }
-
-                })
-
-
-                // ------------------------------------------
-                // DATABASE ERROR
-                // ------------------------------------------
-
-                .catch(function(error) {
-
-                    console.error(
-                        "Firebase Error:",
-                        error
-                    );
-
-                    alert(
-                        "Database connection error:\n\n" +
-                        error.message
-                    );
-
-                    loginButton.disabled = false;
-
-                    loginButton.innerText =
-                        "Secure Login";
-
-                });
-
-        }
-
-    </script>
+</script>
 
 
 </body>
