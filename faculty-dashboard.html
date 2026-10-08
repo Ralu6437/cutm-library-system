@@ -160,7 +160,54 @@ function renderBooks(){const tb=document.getElementById("booksTable");if(!tb)ret
 function openBookModal(id=null){editingBookId=id;document.getElementById("bookModalTitle").textContent=id?"Edit Book":"Add New Book";const b=id?books.find(x=>x._key===id):null;["bookName","bookAuthor","bookISBN","bookCategory","bookQuantity","bookAvailable","bookRoom","bookRow","bookShelf","bookRating","bookPic"].forEach(k=>document.getElementById(k).value="");if(b){document.getElementById("bookName").value=b.name||"";document.getElementById("bookAuthor").value=b.author||"";document.getElementById("bookISBN").value=b.isbn||"";document.getElementById("bookCategory").value=b.category||"";document.getElementById("bookQuantity").value=b.quantity??b.available??0;document.getElementById("bookAvailable").value=b.available??0;document.getElementById("bookRoom").value=b.roomNumber||"";document.getElementById("bookRow").value=b.rowNumber||"";document.getElementById("bookShelf").value=b.shelfNumber||b.location||"";document.getElementById("bookRating").value=b.rating??"";document.getElementById("bookPic").value=b.pic||""}openModal("bookModal")}
 function saveBook(){const name=document.getElementById("bookName").value.trim(),author=document.getElementById("bookAuthor").value.trim(),quantity=Number(document.getElementById("bookQuantity").value),available=Number(document.getElementById("bookAvailable").value),roomNumber=document.getElementById("bookRoom").value.trim(),rowNumber=document.getElementById("bookRow").value.trim(),shelfNumber=document.getElementById("bookShelf").value.trim();if(!name||!author||quantity<0||available<0||available>quantity||!roomNumber||!rowNumber||!shelfNumber)return alert("Book title, author, quantity, available quantity, room number, row number and shelf/place are required.");const data={name,author,isbn:document.getElementById("bookISBN").value.trim(),category:document.getElementById("bookCategory").value.trim(),quantity,available,roomNumber,rowNumber,shelfNumber,location:roomNumber+" • Row "+rowNumber+" • "+shelfNumber,rating:Number(document.getElementById("bookRating").value||0),pic:document.getElementById("bookPic").value.trim(),updatedAt:Date.now()};const ref=editingBookId?db.ref("library_books/"+editingBookId):db.ref("library_books").push();if(!editingBookId)data.createdAt=Date.now();ref.set(data).then(()=>{closeModal("bookModal");showToast("Book saved with library location")}).catch(e=>alert(e.message))}
 function deleteBook(id){if(issued.some(x=>String(x.bookId)===String(id)&&x.returned!==true))return alert("This book has an active issue and cannot be removed.");if(!confirm("Remove this book from the library?"))return;db.ref("library_books/"+id).remove().then(()=>showToast("Book removed")).catch(e=>alert(e.message))}
-function renderStudents(){const tb=document.getElementById("studentsTable");if(!tb)return;const q=(document.getElementById("studentSearch")?.value||"").toLowerCase();const arr=students.filter(s=>(String(s.registrationNumber||s.id||"")+" "+String(s.name||"")+" "+String(s.email||"")).toLowerCase().includes(q));tb.innerHTML=arr.length?arr.map(s=>`<tr><td><b>${esc(s.registrationNumber||s.id)}</b></td><td>${esc(s.name||"-")}</td><td>${esc(s.email||"-")}</td><td>${esc(s.phone||"-")}</td><td><span class="badge ${s.blocked?"bad":"ok"}">${s.blocked?"Blocked":"Active"}</span></td><td><button class="btn btn-light" onclick="openStudentModal('${esc(s._key)}')">Edit</button></td></tr>`).join(""):'<tr><td colspan="6"><div class="empty">No students found.</div></td></tr>';}
+function renderStudents(){
+    const tb=document.getElementById("studentsTable");
+    if(!tb)return;
+
+    const q=(document.getElementById("studentSearch")?.value||"").toLowerCase();
+
+    const arr=students.filter(s=>
+        (
+            String(s.registrationNumber||s.id||"")+" "+
+            String(s.name||"")+" "+
+            String(s.email||"")
+        ).toLowerCase().includes(q)
+    );
+
+    tb.innerHTML=arr.length
+        ? arr.map(s=>
+            '<tr>'+
+            '<td><b>'+esc(s.registrationNumber||s.id)+'</b></td>'+
+            '<td>'+esc(s.name||"-")+'</td>'+
+            '<td>'+esc(s.email||"-")+'</td>'+
+            '<td>'+esc(s.phone||"-")+'</td>'+
+            '<td>'+
+                '<span class="badge '+(s.blocked?"bad":"ok")+'">'+
+                (s.blocked?"Blocked":"Active")+
+                '</span>'+
+            '</td>'+
+            '<td>'+
+                '<button class="btn btn-light" onclick="openStudentModal(\''+
+                esc(s._key)+
+                '\')">Edit</button> '+
+                '<button class="btn '+(s.blocked?"btn-green":"btn-yellow")+
+                '" onclick="toggleStudent(\''+
+                esc(s._key)+
+                '\','+
+                (!s.blocked)+
+                ')">'+
+                (s.blocked?"Unblock":"Block")+
+                '</button>'+
+            '</td>'+
+            '</tr>'
+        ).join("")
+        :
+        '<tr>'+
+        '<td colspan="6">'+
+        '<div class="empty">No students found.</div>'+
+        '</td>'+
+        '</tr>';
+}
 function saveStudent(){const reg=document.getElementById("studentReg").value.trim(),name=document.getElementById("studentName").value.trim();if(!reg||!name)return alert("Registration number and name are required.");const data={registrationNumber:reg,name,email:document.getElementById("studentEmail").value.trim(),phone:document.getElementById("studentPhone").value.trim(),department:document.getElementById("studentDept").value.trim(),year:document.getElementById("studentYear").value.trim(),updatedAt:Date.now()};const ref=editingStudentId?db.ref("students/"+editingStudentId):db.ref("students").push();if(!editingStudentId)data.createdAt=Date.now();ref.set(data).then(()=>{closeModal("studentModal");showToast("Student saved")}).catch(e=>alert(e.message))}
 function populateIssueBooks(){const s=document.getElementById("issueBook");if(!s)return;s.innerHTML=books.filter(b=>Number(b.available??0)>0).map(b=>'<option value="'+esc(b._key)+'">'+esc(b.name||"Untitled")+' ('+Number(b.available||0)+' available)</option>').join("")||'<option value="">No available books</option>'}
 function openIssueModal(){populateIssueBooks();document.getElementById("issueStudent").value="";document.getElementById("issueDate").value=today();const d=new Date();d.setDate(d.getDate()+14);document.getElementById("issueDue").value=d.toISOString().slice(0,10);openModal("issueModal")}
@@ -206,7 +253,22 @@ function renderNotifications(){const box=document.getElementById("notificationsL
 function saveSettings(){const data={libraryName:document.getElementById("settingLibrary").value.trim(),updatedAt:Date.now()};db.ref("settings/library").set(data).then(()=>document.getElementById("settingsStatus").textContent="Settings saved to Firebase.").catch(e=>alert(e.message))}
 function globalSearch(){const q=document.getElementById("globalSearch").value.trim().toLowerCase();if(!q)return;const b=books.find(x=>(String(x.name||"")+" "+String(x.author||"")+" "+String(x.isbn||"")).toLowerCase().includes(q));const s=students.find(x=>(String(x.registrationNumber||x.id||"")+" "+String(x.name||"")+" "+String(x.email||"")).toLowerCase().includes(q));if(b){showSection("books");document.getElementById("bookSearch").value=q;renderBooks()}else if(s){showSection("students");document.getElementById("studentSearch").value=q;renderStudents()}}
 function logout(){localStorage.removeItem("facultyUser");localStorage.removeItem("facultyPhone");localStorage.removeItem("facultyId");localStorage.removeItem("facultyName");localStorage.removeItem("facultyUserName");localStorage.removeItem("facultyEmail");location.replace("index.html");}
-history.pushState(null,"",location.href);window.addEventListener("popstate",function(){localStorage.removeItem("facultyUser");localStorage.removeItem("facultyPhone");localStorage.removeItem("facultyId");localStorage.removeItem("facultyName");localStorage.removeItem("facultyUserName");localStorage.removeItem("facultyEmail");location.replace("index.html");});
+function toggleStudent(id,blocked){
+  const s=students.find(x=>x._key===id);
+  if(!s)return;
+
+  const reg=String(s.registrationNumber||s.id||"").trim();
+  const updates={};
+
+  updates["students/"+id+"/blocked"]=blocked;
+
+  if(reg)updates["users/"+reg+"/blocked"]=blocked;
+
+  db.ref().update(updates)
+    .then(()=>showToast(blocked?"Student blocked":"Student unblocked"))
+    .catch(e=>alert(e.message));
+}
+  history.pushState(null,"",location.href);window.addEventListener("popstate",function(){localStorage.removeItem("facultyUser");localStorage.removeItem("facultyPhone");localStorage.removeItem("facultyId");localStorage.removeItem("facultyName");localStorage.removeItem("facultyUserName");localStorage.removeItem("facultyEmail");location.replace("index.html");});
 window.addEventListener("load",()=>{renderDashboard();loadFacultyProfile();renderChart();renderRecent();populateIssueBooks()});
 </script>
 </body>
