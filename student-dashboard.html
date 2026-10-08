@@ -141,11 +141,8 @@ function updateNotificationCount() {
     const unreadNotifications =
         notifications.filter(x => x.read !== true).length;
 
-    const announcementCount =
-        announcements.length;
-
     document.getElementById("notifCount").textContent =
-        unreadNotifications + announcementCount;
+        unreadNotifications;
 }
 listen("resources/"+studentId,snapshot=>{resources=[];snapshot.forEach(child=>{const data=child.val();resources.push({...data,_key:child.key});});console.log("Total resources:",resources.length);console.log("Resources:",resources);renderResources();});
 listen("students",s=>{let found=null;s.forEach(c=>{const v=c.val()||{};if(String(v.registrationNumber||c.key)===String(studentId))found={...v,_key:c.key,id:c.key}});studentData=found||{registrationNumber:studentId};updateStudentHeader();renderProfile()});
@@ -319,7 +316,46 @@ function renderRecentNotifications() {
     }).join("");
 }
 function renderAnnouncements(){const box=document.getElementById("recentAnnouncements");if(!box)return;const rootAnnouncements=[...announcements];const notificationAnnouncements=notifications.filter(x=>x.type==="announcement").map(x=>({...x,title:x.title||"Announcement"}));const all=[...rootAnnouncements,...notificationAnnouncements];const unique=[];const seen=new Set();all.forEach(x=>{const key=x._key||(x.title+"|"+x.message+"|"+x.createdAt);if(!seen.has(key)){seen.add(key);unique.push(x)}});const arr=unique.sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0)).slice(0,3);box.innerHTML=arr.length?arr.map(x=>'<div class="notice"><b>📢 '+esc(x.title||"Announcement")+'</b><div style="font-size:12px;margin-top:5px">'+esc(x.message||"")+'</div>'+(x.facultyName?'<div style="font-size:11px;color:#4a5568;margin-top:6px"><b>Published by:</b> '+esc(x.facultyName)+' · ID: '+esc(x.facultyId||"-")+' · Phone: '+esc(x.facultyPhone||"-")+' · Email: '+esc(x.facultyEmail||"-")+'</div>':'')+'<small>'+esc(x.date||"")+'</small></div>').join(""):'<div class="empty">No announcements.</div>'}
-function markNotificationsRead(){if(!studentId){alert("Student login registration number is missing.");return;}if(notifications.length===0)return;if(!confirm("Clear all notifications from your account?"))return;db.ref("notifications/"+studentId).remove().then(()=>{notifications=[];document.getElementById("notifCount").textContent="0";renderNotifications();renderRecentNotifications();alert("All notifications cleared.");}).catch(error=>{console.error("Notification delete error:",error);alert("Failed to clear notifications: "+error.message);});}
+function markNotificationsRead() {
+    if (!studentId) {
+        alert("Student login registration number is missing.");
+        return;
+    }
+
+    if (notifications.length === 0) {
+        alert("There are no personal notifications to mark as read.");
+        return;
+    }
+
+    if (!confirm("Mark all notifications as read?")) return;
+
+    const updates = {};
+
+    notifications.forEach(n => {
+        if (n._key) {
+            updates[n._key + "/read"] = true;
+        }
+    });
+
+    db.ref("notifications/" + studentId)
+        .update(updates)
+        .then(() => {
+            notifications = notifications.map(n => ({
+                ...n,
+                read: true
+            }));
+
+            updateNotificationCount();
+            renderNotifications();
+            renderRecentNotifications();
+
+            alert("All notifications marked as read.");
+        })
+        .catch(error => {
+            console.error("Mark read error:", error);
+            alert("Failed to mark notifications as read: " + error.message);
+        });
+}
 function renderResources(){const box=document.getElementById("resourcesList");if(!box)return;if(!resources||resources.length===0){box.innerHTML='<div class="empty">No resources saved.</div>';return;}box.innerHTML="";resources.sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0)).forEach(resource=>{const item=document.createElement("div");item.className="notice";const title=document.createElement("b");title.textContent=resource.title||"Resource";const paragraph=document.createElement("p");const link=document.createElement("a");link.href=resource.url||"#";link.target="_blank";link.rel="noopener noreferrer";link.textContent="Open resource";paragraph.appendChild(link);item.appendChild(title);item.appendChild(paragraph);box.appendChild(item);});}
 function openResourceModal(){document.getElementById("resourceTitle").value="";document.getElementById("resourceUrl").value="";openModal("resourceModal")}
 function saveResource(){const title=document.getElementById("resourceTitle").value.trim(),url=document.getElementById("resourceUrl").value.trim();if(!title||!url){alert("Enter title and URL.");return;}db.ref("resources/"+studentId).push({title:title,url:url,createdAt:Date.now()}).then(()=>{document.getElementById("resourceTitle").value="";document.getElementById("resourceUrl").value="";closeModal("resourceModal");alert("Resource saved successfully.");}).catch(error=>{alert(error.message);});}
