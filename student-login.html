@@ -419,7 +419,27 @@
                         // CHECK PASSWORD
                         // ------------------------------------------
 
-                       if(studentData.password===password){if(studentData.blocked===true){alert("Your account is blocked by the administration.");loginButton.disabled=false;loginButton.innerText="Secure Login";return;}alert("Login successful!");localStorage.setItem("studentRegNo",username);window.location.href="student-dashboard.html";}
+                     const studentData = snapshot.val();
+
+if (!studentData) {
+    alert("Invalid registration number or password.");
+    return;
+}
+
+if (studentData.password !== password) {
+    alert("Invalid registration number or password.");
+    return;
+}
+
+// BLOCK CHECK MUST COME BEFORE LOGIN SUCCESS
+if (studentData.blocked === true) {
+    alert("Your account is blocked by the administration.");
+    return;
+}
+
+// Only active students reach here
+alert("Login successful!");
+                        localStorage.setItem("studentRegNo",username);window.location.href="student-dashboard.html";}
 
                         else {
 
